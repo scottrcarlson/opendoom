@@ -102,10 +102,6 @@
 /* Define on targets supporting 386 assembly */
 #undef I386_ASM
 
-/* Define this to see real-time memory allocation statistics, and enable extra
-   debugging features */
-#undef INSTRUMENTED
-
 /* Name of package */
 #undef PACKAGE
 
@@ -127,9 +123,6 @@
 /* Set to the attribute to apply to struct definitions to make them packed */
 #undef PACKEDATTR
 
-/* Define to enable internal range checking */
-#undef RANGECHECK
-
 /* Define if you have an old SDL_net, such that the UDPpacket structure has a
    src member instead of an address member */
 #undef SDL_NET_UDP_PACKET_SRC
@@ -140,10 +133,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
-
-/* Defining this causes time stamps to be created each time a lump is locked,
-   and lumps locked for long periods of time are reported */
-#undef TIMEDIAG
 
 /* Define if you want to use gluImageScale */
 #undef USE_GLU_IMAGESCALE
@@ -180,7 +169,7 @@
 #undef inline
 #endif
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
+/* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
 /* Define to strcasecmp, if we have it */
