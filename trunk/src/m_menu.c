@@ -61,6 +61,9 @@
 #include "r_demo.h"
 #include "r_fps.h"
 
+//OpenMoko Touchscreen/Accelerometer support
+#include "accelneo.h"
+
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern boolean  message_dontfuckwithme;
 
@@ -358,6 +361,33 @@ void M_DrawMainMenu(void)
 {
   // CPhipps - patch drawing updated
   V_DrawNamePatch(94, 2, 0, "M_DOOM", CR_DEFAULT, VPT_STRETCH);
+}
+
+
+/////////////////////////////
+//                                                                                                                     
+// OpenMoko TouchScreen                                                                                           
+//          
+unsigned char neo_open(struct neo_t *neo, enum neo_accel w_accel)
+{s
+    /* open one of the two accelerometers (top or bottom) */
+    if (w_accel == neo_accel2) {
+      neo->accel_desc = open("/dev/input/event2", O_RDONLY);
+    } else if (w_accel == neo_accel3) {
+      neo->accel_desc = open("/dev/input/event3", O_RDONLY);
+    } else {
+      neo->accel_desc = -1;
+    }
+
+  /* use screen (event1) */
+  neo->screen_desc = open("/dev/input/event1", O_RDONLY | O_NONBLOCK);
+
+  if ((neo->accel_desc < 0) || (neo->screen_desc < 0)) {
+    return 0;
+  } else {
+    go_on = 1;
+    return 1;
+  }
 }
 
 /////////////////////////////
@@ -4083,8 +4113,38 @@ boolean M_Responder (event_t* ev) {
 
   ch = -1; // will be changed to a legit char if we're going to use it here
 
-  // Process joystick input
 
+////////////////////////////////
+// Process Openmoko Touchsceen
+
+  unsigned short int rel = 1;
+  SDL_Event evento;
+  SDL_PollEvent(&evento)
+
+  switch (evento.type){
+  case SDL_MOUSEMOTION:
+    if (evento.button.x>300 && evento.button.y>70){
+      ch = key_menu_up;
+    }
+    else if (evento.button.x<=300 && evento.button.y>180){
+      ch = key_menu_down;
+    }
+    else if (evento.button.x<=300 && evento.button.y>50){
+      ch = key_menu_enter;
+    }
+    else if (evento.button.x==319 && evento.button.y==0){
+      ch = key_menu_esc;
+    } 
+    else if (evento.button.x==319 && evento.button.y==0){
+      ch = 'y';
+    } 
+  }
+
+// End OpenMoko Touchscreen
+////////////////////////////////////
+
+
+  // Process joystick input
   if (ev->type == ev_joystick && joywait < I_GetTime())  {
     if (ev->data3 == -1)
       {
