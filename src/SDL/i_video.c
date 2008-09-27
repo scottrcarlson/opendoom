@@ -187,26 +187,36 @@ static void I_GetEvent(SDL_Event *Event)
   }
   break;
 
-  case SDL_MOUSEBUTTONDOWN:
+  /*  case SDL_MOUSEBUTTONDOWN:
   case SDL_MOUSEBUTTONUP:
-  if (mouse_currently_grabbed)
-  {
-    event.type = ev_mouse;
-    event.data1 = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
-    event.data2 = event.data3 = 0;
-    D_PostEvent(&event);
-  }
-  break;
+    fprintf(stderr,"Caught MouseButtonUp\n");
+    if (mouse_currently_grabbed)
+      {
+	event.type = ev_mouse;
+	event.data1 = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
+	event.data2 = event.data3 = 0;
+	D_PostEvent(&event);
+      }
+      break;*/
+
+////////////////////////
+////// OpenMoko TouchScreen
 
   case SDL_MOUSEMOTION:
-  if (mouse_currently_grabbed) {
-    event.type = ev_mouse;
-    event.data1 = I_SDLtoDoomMouseState(Event->motion.state);
-    event.data2 = Event->motion.xrel << 5;
-    event.data3 = -Event->motion.yrel << 5;
-    D_PostEvent(&event);
-  }
+    fprintf(stderr,"Caught MouseMotion\n");
+    //if (mouse_currently_grabbed) {
+      event.type = ev_mouse;
+      event.data1 = I_SDLtoDoomMouseState(Event->motion.state);
+      event.data2 = Event->motion.xrel << 5;
+      event.data3 = -Event->motion.yrel << 5;
+      fprintf(stderr,"%d %d\n",Event->motion.xrel,Event->motion.yrel);
+      D_PostEvent(&event);
+
+      //}
   break;
+
+  /// OpenMoko Touchscreen End
+  //////////////////////////////
 
 
   case SDL_QUIT:

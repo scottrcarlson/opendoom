@@ -142,7 +142,7 @@ AMTAR = ${SHELL} /home/scott/code/opendoom/autotools/missing --run tar
 AUTOCONF = ${SHELL} /home/scott/code/opendoom/autotools/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/scott/code/opendoom/autotools/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/scott/code/opendoom/autotools/missing --run automake-1.10
-AWK = mawk
+AWK = gawk
 BUILD_DOOM = prboom
 CC = ccache arm-angstrom-linux-gnueabi-gcc -march=armv4t -mtune=arm920t
 CCDEPMODE = depmode=gcc3

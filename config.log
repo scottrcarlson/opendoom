@@ -385,10 +385,8 @@ configure:1938: result: yes
 configure:1966: checking for a thread-safe mkdir -p
 configure:2005: result: /bin/mkdir -p
 configure:2018: checking for gawk
-configure:2048: result: no
-configure:2018: checking for mawk
-configure:2034: found /usr/bin/mawk
-configure:2045: result: mawk
+configure:2034: found /usr/bin/gawk
+configure:2045: result: gawk
 configure:2056: checking whether make sets $(MAKE)
 configure:2077: result: yes
 configure:2157: checking for arm-angstrom-linux-gnueabi-strip
@@ -503,7 +501,7 @@ configure:5150: checking for asm/byteorder.h
 configure:5158: result: yes
 configure:5172: checking for stricmp
 configure:5228: ccache arm-angstrom-linux-gnueabi-gcc -march=armv4t -mtune=arm920t -o conftest -isystem/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/include -fexpensive-optimizations -fomit-frame-pointer -frename-registers -Os -I$(top_srcdir)/src -isystem/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/include -L/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/lib -Wl,-rpath-link,/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/lib -Wl,-O1 conftest.c  >&5
-/tmp/ccADJjdZ.o: In function `main':
+/tmp/ccmvKowb.o: In function `main':
 conftest.c:(.text+0x8): undefined reference to `stricmp'
 collect2: ld returned 1 exit status
 configure:5234: $? = 1
@@ -564,7 +562,7 @@ configure: failed program was:
 configure:5251: result: no
 configure:5263: checking for strnicmp
 configure:5319: ccache arm-angstrom-linux-gnueabi-gcc -march=armv4t -mtune=arm920t -o conftest -isystem/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/include -fexpensive-optimizations -fomit-frame-pointer -frename-registers -Os -I$(top_srcdir)/src -isystem/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/include -L/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/lib -Wl,-rpath-link,/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/lib -Wl,-O1 conftest.c  >&5
-/tmp/ccSyjGVs.o: In function `main':
+/tmp/ccUInl0D.o: In function `main':
 conftest.c:(.text+0x8): undefined reference to `strnicmp'
 collect2: ld returned 1 exit status
 configure:5325: $? = 1
@@ -889,7 +887,7 @@ ac_cv_path_SDL_CONFIG=/usr/bin/sdl-config
 ac_cv_path_install='/usr/bin/install -c'
 ac_cv_path_mkdir=/bin/mkdir
 ac_cv_pread=no
-ac_cv_prog_AWK=mawk
+ac_cv_prog_AWK=gawk
 ac_cv_prog_CC='ccache arm-angstrom-linux-gnueabi-gcc -march=armv4t -mtune=arm920t'
 ac_cv_prog_RANLIB=arm-angstrom-linux-gnueabi-ranlib
 ac_cv_prog_STRIP=arm-angstrom-linux-gnueabi-strip
@@ -1045,7 +1043,7 @@ AMTAR='${SHELL} /home/scott/code/opendoom/autotools/missing --run tar'
 AUTOCONF='${SHELL} /home/scott/code/opendoom/autotools/missing --run autoconf'
 AUTOHEADER='${SHELL} /home/scott/code/opendoom/autotools/missing --run autoheader'
 AUTOMAKE='${SHELL} /home/scott/code/opendoom/autotools/missing --run automake-1.10'
-AWK='mawk'
+AWK='gawk'
 BUILD_DOOM='prboom'
 BUILD_GL_FALSE=''
 BUILD_GL_TRUE='#'

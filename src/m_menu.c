@@ -61,8 +61,14 @@
 #include "r_demo.h"
 #include "r_fps.h"
 
+///////////////////
 //OpenMoko Touchscreen/Accelerometer support
+
 #include "accelneo.h"
+
+//End OpenMoko
+///////////////////
+
 
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern boolean  message_dontfuckwithme;
@@ -363,32 +369,6 @@ void M_DrawMainMenu(void)
   V_DrawNamePatch(94, 2, 0, "M_DOOM", CR_DEFAULT, VPT_STRETCH);
 }
 
-
-/////////////////////////////
-//                                                                                                                     
-// OpenMoko TouchScreen                                                                                           
-//          
-unsigned char neo_open(struct neo_t *neo, enum neo_accel w_accel)
-{s
-    /* open one of the two accelerometers (top or bottom) */
-    if (w_accel == neo_accel2) {
-      neo->accel_desc = open("/dev/input/event2", O_RDONLY);
-    } else if (w_accel == neo_accel3) {
-      neo->accel_desc = open("/dev/input/event3", O_RDONLY);
-    } else {
-      neo->accel_desc = -1;
-    }
-
-  /* use screen (event1) */
-  neo->screen_desc = open("/dev/input/event1", O_RDONLY | O_NONBLOCK);
-
-  if ((neo->accel_desc < 0) || (neo->screen_desc < 0)) {
-    return 0;
-  } else {
-    go_on = 1;
-    return 1;
-  }
-}
 
 /////////////////////////////
 //
@@ -4114,70 +4094,41 @@ boolean M_Responder (event_t* ev) {
   ch = -1; // will be changed to a legit char if we're going to use it here
 
 
-////////////////////////////////
-// Process Openmoko Touchsceen
-
-  unsigned short int rel = 1;
-  SDL_Event evento;
-  SDL_PollEvent(&evento)
-
-  switch (evento.type){
-  case SDL_MOUSEMOTION:
-    if (evento.button.x>300 && evento.button.y>70){
-      ch = key_menu_up;
-    }
-    else if (evento.button.x<=300 && evento.button.y>180){
-      ch = key_menu_down;
-    }
-    else if (evento.button.x<=300 && evento.button.y>50){
-      ch = key_menu_enter;
-    }
-    else if (evento.button.x==319 && evento.button.y==0){
-      ch = key_menu_esc;
-    } 
-    else if (evento.button.x==319 && evento.button.y==0){
-      ch = 'y';
-    } 
-  }
-
-// End OpenMoko Touchscreen
-////////////////////////////////////
-
 
   // Process joystick input
   if (ev->type == ev_joystick && joywait < I_GetTime())  {
     if (ev->data3 == -1)
       {
-  ch = key_menu_up;                                // phares 3/7/98
-  joywait = I_GetTime() + 5;
+	ch = key_menu_up;                                // phares 3/7/98
+	joywait = I_GetTime() + 5;
       }
     else if (ev->data3 == 1)
       {
-  ch = key_menu_down;                              // phares 3/7/98
-  joywait = I_GetTime() + 5;
+	ch = key_menu_down;                              // phares 3/7/98
+	joywait = I_GetTime() + 5;
       }
 
     if (ev->data2 == -1)
       {
-  ch = key_menu_left;                              // phares 3/7/98
-  joywait = I_GetTime() + 2;
+	ch = key_menu_left;                              // phares 3/7/98
+	joywait = I_GetTime() + 2;
       }
     else if (ev->data2 == 1)
       {
-  ch = key_menu_right;                             // phares 3/7/98
-  joywait = I_GetTime() + 2;
+	ch = key_menu_right;                             // phares 3/7/98
+	joywait = I_GetTime() + 2;
       }
 
     if (ev->data1&1)
       {
-  ch = key_menu_enter;                             // phares 3/7/98
-  joywait = I_GetTime() + 5;
+	ch = key_menu_enter;                             // phares 3/7/98
+	joywait = I_GetTime() + 5;
       }
 
     if (ev->data1&2)
       {
-  ch = key_menu_backspace;                         // phares 3/7/98
-  joywait = I_GetTime() + 5;
+	ch = key_menu_backspace;                         // phares 3/7/98
+	joywait = I_GetTime() + 5;
       }
 
     // phares 4/4/98:
@@ -4186,62 +4137,94 @@ boolean M_Responder (event_t* ev) {
 
     if (setup_active && set_keybnd_active) {
       if (ev->data1&4) {
-  ch = 0; // meaningless, just to get you past the check for -1
-  joywait = I_GetTime() + 5;
+	ch = 0; // meaningless, just to get you past the check for -1
+	joywait = I_GetTime() + 5;
       }
       if (ev->data1&8) {
-  ch = 0; // meaningless, just to get you past the check for -1
-  joywait = I_GetTime() + 5;
+	ch = 0; // meaningless, just to get you past the check for -1
+	joywait = I_GetTime() + 5;
       }
     }
-
+    
   } else {
+
+////////////////////////////////
+// Process Openmoko Touchsceen
+
+/* 
+  if (evento.button.x>300 && evento.button.y>70){
+    ch = key_menu_up;
+    fprintf(stderr, "Got an UP");
+  }
+  else if (evento.button.x<=300 && evento.button.y>180){
+    fprintf(stderr, "Got an down");
+    ch = key_menu_down;
+  }
+  else if (evento.button.x<=300 && evento.button.y>50){
+    fprintf(stderr, "Got an enter");
+    ch = key_menu_enter;
+  }
+  else if (evento.button.x==319 && evento.button.y==0){
+	    fprintf(stderr, "Got an esc");
+	    ch = key_menu_escape;
+  } 
+  else if (evento.button.x==319 && evento.button.y==0){
+    fprintf(stderr, "Got a y");
+    ch = 'y';
+    }*/
+  
+
+// End OpenMoko Touchscreen
+////////////////////////////////////
+
+
    // Process mouse input
 
-    if (ev->type == ev_mouse && mousewait < I_GetTime()) {
+    /*    if (ev->type == ev_mouse && mousewait < I_GetTime()) {
       mousey += ev->data3;
       if (mousey < lasty-30)
-  {
-    ch = key_menu_down;                            // phares 3/7/98
-    mousewait = I_GetTime() + 5;
-    mousey = lasty -= 30;
-  }
+	{
+	  ch = key_menu_down;                            // phares 3/7/98
+	  mousewait = I_GetTime() + 5;
+	  mousey = lasty -= 30;
+	}
       else if (mousey > lasty+30)
-  {
-    ch = key_menu_up;                              // phares 3/7/98
-    mousewait = I_GetTime() + 5;
-    mousey = lasty += 30;
-  }
-
+	{
+	  ch = key_menu_up;                              // phares 3/7/98
+	  mousewait = I_GetTime() + 5;
+	  mousey = lasty += 30;
+	}
+      
       mousex += ev->data2;
       if (mousex < lastx-30)
-  {
-    ch = key_menu_left;                            // phares 3/7/98
-    mousewait = I_GetTime() + 5;
-    mousex = lastx -= 30;
-  }
+	{
+	  ch = key_menu_left;                            // phares 3/7/98
+	  mousewait = I_GetTime() + 5;
+	  mousex = lastx -= 30;
+	}
       else if (mousex > lastx+30)
-  {
-    ch = key_menu_right;                           // phares 3/7/98
-    mousewait = I_GetTime() + 5;
-    mousex = lastx += 30;
-  }
-
+	{
+	  ch = key_menu_right;                           // phares 3/7/98
+	  mousewait = I_GetTime() + 5;
+	  mousex = lastx += 30;
+	}
+      
       if (ev->data1&1)
-  {
-    ch = key_menu_enter;                           // phares 3/7/98
-    mousewait = I_GetTime() + 15;
-  }
-
+	{
+	  ch = key_menu_enter;                           // phares 3/7/98
+	  mousewait = I_GetTime() + 15;
+	}
+      
       if (ev->data1&2)
-  {
-    ch = key_menu_backspace;                       // phares 3/7/98
-    mousewait = I_GetTime() + 15;
-  }
+	{
+	  ch = key_menu_backspace;                       // phares 3/7/98
+	  mousewait = I_GetTime() + 15;
+	}
 
       // phares 4/4/98:
       // Handle mouse button 3, and allow it to pass down
       // to where key binding can eat it.
+      
 
       if (setup_active && set_keybnd_active)
   if (ev->data1&4)
@@ -4250,20 +4233,21 @@ boolean M_Responder (event_t* ev) {
     mousewait = I_GetTime() + 15;
     }
     }
-    else
+    */
+	else
 
       // Process keyboard input
 
-      if (ev->type == ev_keydown)
-        {
-        ch = ev->data1;               // phares 4/11/98:
-        if (ch == KEYD_RSHIFT)        // For chat string processing, need
-          shiftdown = true;           // to know when shift key is up or
-        }                             // down so you can get at the !,#,
-      else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
-        if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
-          shiftdown = false;          // so we need to note the difference
-    }                                 // here using the 'shiftdown' boolean.
+  if (ev->type == ev_keydown)
+    {
+      ch = ev->data1;               // phares 4/11/98:
+      if (ch == KEYD_RSHIFT)        // For chat string processing, need
+	shiftdown = true;           // to know when shift key is up or
+    }                             // down so you can get at the !,#,
+  else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
+    if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
+      shiftdown = false;          // so we need to note the difference
+      }                                 // here using the 'shiftdown' boolean.
 
   if (ch == -1)
     return false; // we can't use the event here
@@ -4468,11 +4452,13 @@ boolean M_Responder (event_t* ev) {
       }
 
     /* killough 10/98: allow key shortcut into Setup menu */
+    //Openmoko -- This turns out to be the AUX Button
     if (ch == key_setup) {
-      M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);
-      M_SetupNextMenu(&SetupDef);
-      return true;
+      //M_StartControlPanel();
+      //S_StartSound(NULL,sfx_swtchn);
+      //M_SetupNextMenu(&SetupDef);
+      ch=key_menu_escape;
+      //return true;
     }
   }
   // Pop-up Main menu?
