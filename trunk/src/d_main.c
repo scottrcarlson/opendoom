@@ -152,13 +152,13 @@ void D_PostEvent(event_t *ev)
    * FIXME: This is a lousy kludge */
   if (gametic < 3) return;
   M_Responder(ev) ||
-	  (gamestate == GS_LEVEL && (
-				     HU_Responder(ev) ||
-				     ST_Responder(ev) ||
-				     AM_Responder(ev)
-				     )
-	  ) ||
-	G_Responder(ev);
+    (gamestate == GS_LEVEL && (
+			       HU_Responder(ev) ||
+			       ST_Responder(ev) ||
+			       AM_Responder(ev)
+			       )
+     ) ||
+    G_Responder(ev);
 }
 
 //
