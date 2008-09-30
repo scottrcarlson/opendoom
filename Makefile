@@ -20,6 +20,7 @@
 #
 
 
+
 pkgdatadir = $(datadir)/prboom
 pkglibdir = $(libdir)/prboom
 pkgincludedir = $(includedir)/prboom

@@ -61,6 +61,30 @@
 #include "st_stuff.h"
 #include "lprintf.h"
 
+
+
+/////////////////
+// OpenMoko TouchScreen
+
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <signal.h>
+#include <sys/fcntl.h>
+//#include <sys/ioctl.h>
+//#include <sys/mman.h>
+//#include <sys/time.h>
+
+#include "tslib-private.h"
+#include "tslib.h"
+extern struct tslib_module_info __ts_raw;
+struct tsdev *ts;
+char *tsdevice=NULL;
+
+
+// END OpenMoko TouchScreen
+/////////////////
+ 
+
 int gl_colorbuffer_bits=16;
 int gl_depthbuffer_bits=16;
 
@@ -156,6 +180,14 @@ static int I_TranslateKey(SDL_keysym* key)
 
 }
 
+////////////////////
+//// Openmoko TS Functions from TSLIB
+////////////////////
+
+
+////////////////////
+//// END Openmoko
+////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 // Main input code
 
@@ -170,8 +202,10 @@ static int I_SDLtoDoomMouseState(Uint8 buttonstate)
 
 static void I_GetEvent(SDL_Event *Event)
 {
+  struct ts_sample samp;   // Openmoko
+  int ret;                 // Openmoko 
   event_t event;
-
+  
   switch (Event->type) {
   case SDL_KEYDOWN:
     event.type = ev_keydown;
@@ -203,17 +237,19 @@ static void I_GetEvent(SDL_Event *Event)
 ////// OpenMoko TouchScreen
 
   case SDL_MOUSEMOTION:
-    fprintf(stderr,"Caught MouseMotion\n");
-    //if (mouse_currently_grabbed) {
-      event.type = ev_mouse;
-      event.data1 = I_SDLtoDoomMouseState(Event->motion.state);
-      event.data2 = Event->motion.xrel << 5;
-      event.data3 = -Event->motion.yrel << 5;
-      fprintf(stderr,"%d %d\n",Event->motion.xrel,Event->motion.yrel);
-      D_PostEvent(&event);
 
-      //}
-  break;
+    event.type = ev_mouse;
+
+    event.data1 = I_SDLtoDoomMouseState(Event->motion.state);
+    event.data2 = Event->motion.xrel << 5;
+    event.data3 = -Event->motion.yrel << 5;
+      
+
+    //fprintf(stderr,"%d %d\n",Event->motion.xrel,Event->motion.yrel);
+    D_PostEvent(&event);
+
+
+    break;
 
   /// OpenMoko Touchscreen End
   //////////////////////////////
@@ -269,8 +305,14 @@ static void I_InitInputs(void)
   // e6y: fix for turn-snapping bug on fullscreen in software mode
   if (!M_CheckParm("-nomouse"))
     SDL_WarpMouse((unsigned short)(SCREENWIDTH/2), (unsigned short)(SCREENHEIGHT/2));
-
+  
   I_InitJoystick();
+  
+  ///////////
+  // OpenMoko
+  ////////////
+
+  
 }
 /////////////////////////////////////////////////////////////////////////////
 
