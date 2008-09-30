@@ -4177,10 +4177,13 @@ boolean M_Responder (event_t* ev) {
 // End OpenMoko Touchscreen
 ////////////////////////////////////
 
+    if (ev->type == ev_mouse) {
+
+    }
 
    // Process mouse input
 
-    /*    if (ev->type == ev_mouse && mousewait < I_GetTime()) {
+   /*     if (ev->type == ev_mouse && mousewait < I_GetTime()) {
       mousey += ev->data3;
       if (mousey < lasty-30)
 	{
@@ -4215,7 +4218,7 @@ boolean M_Responder (event_t* ev) {
 	  mousewait = I_GetTime() + 15;
 	}
       
-      if (ev->data1&2)
+      if (ev->data1&2) 
 	{
 	  ch = key_menu_backspace;                       // phares 3/7/98
 	  mousewait = I_GetTime() + 15;
@@ -4233,8 +4236,8 @@ boolean M_Responder (event_t* ev) {
     mousewait = I_GetTime() + 15;
     }
     }
-    */
-	else
+    
+    else*/
 
       // Process keyboard input
 
