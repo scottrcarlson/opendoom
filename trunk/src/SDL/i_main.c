@@ -345,6 +345,31 @@ uid_t stored_euid = -1;
 //int main(int argc, const char * const * argv)
 int main(int argc, char **argv)
 {
+
+    char buf[36];                                                            
+    char tok[100];                                                            
+    char *search = " :";                                                      
+    int i;
+    i = 0;
+    char *dump ;
+
+  while( 1 ) {                                                                 
+    fgets( buf,sizeof(buf),stdin );                                                              
+    if( buf ) { 
+      i += 1;
+      //printf( "sec.usec: %s\n", strtok( buf, search ));                      
+      dump = strtok(buf, search);
+      printf( "%s %s\n", strtok( NULL, search ), strtok(NULL, search));
+      
+      //printf( "samp.y: %s\n", strtok( NULL, search ));                       
+      //dump = strtok(NULL, search);
+      //printf( "samp.pressure: %s\n", strtok( NULL, search ));                
+      printf(" catches %d\n",i);
+    }
+  }   
+    
+    return(8);
+
 #ifdef SECURE_UID
   /* First thing, revoke setuid status (if any) */
   stored_euid = geteuid();
