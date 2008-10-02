@@ -236,11 +236,13 @@ static void I_GetEvent(SDL_Event *Event)
 ////////////////////////
 ////// OpenMoko TouchScreen
 
+
   case SDL_MOUSEMOTION:
 
     event.type = ev_mouse;
 
     event.data1 = I_SDLtoDoomMouseState(Event->motion.state);
+    
     event.data2 = Event->motion.xrel << 5;
     event.data3 = -Event->motion.yrel << 5;
       

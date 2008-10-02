@@ -1,0 +1,16 @@
+
+
+Installation Instructions for the OpenMoko Neo Freerunner.
+
+As root, install SDL Libraries...
+
+opkg install libsdl-1.2-0 libsdl-mixer-1.2-0 libsdl-net-1.2-0
+
+
+Copy timidity patches to /usr/local/lib/timidity
+copy wad files to /usr/local/share/games/doom
+copy opendoome executable /usr/games
+make ~/.opendoom
+copy opendoom.cfg ~/.opendoom
+
+
