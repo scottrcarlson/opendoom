@@ -207,7 +207,6 @@ static void I_GetEvent(SDL_Event *Event)
 	event.data1 = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
 	event.data2 = Event->motion.xrel << 5;
 	event.data3 = -Event->motion.yrel << 5;	
-        fprintf(stderr,"mouse state %d",event.data1);
 	D_PostEvent(&event);
      
   // }
@@ -222,7 +221,6 @@ static void I_GetEvent(SDL_Event *Event)
     event.data1 =  I_SDLtoDoomMouseState(Event->motion.state);
     event.data2 =  Event->motion.x;
     event.data3 = Event->motion.y;	
-    fprintf(stderr,"%d x   %d y\n",event.data2,event.data3);   
 
     /*if ( Event->motion.xrel > 150 && Event->motion.xrel < 160 && Event->motion.yrel > 60)
 				 {

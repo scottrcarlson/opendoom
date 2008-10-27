@@ -41,6 +41,10 @@
 #pragma interface
 #endif
 
+extern boolean touchscreen_triptip;                                                                                     
+extern int touchscreen_originx;                                                                                         
+extern int touchscreen_originy;      
+
 /* CPhipps - removed wadfiles[] stuff to w_wad.h */
 
 extern char basesavegame[];     // killough 2/16/98: savegame path

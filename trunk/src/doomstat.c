@@ -104,3 +104,6 @@ int doom_weapon_toggles; // killough 10/98
 
 int monkeys, default_monkeys;
 
+//SCarlson openmoko touchscreen
+//int touchscreen_originx=-1, touchscreen_originy=-1;
+//boolean touchscreen_triptip=false;

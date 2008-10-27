@@ -40,6 +40,7 @@
 #include "config.h"
 #include "doomtype.h"
 
+
 //
 // Map level types.
 // The following data structures define the persistent format
