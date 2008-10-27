@@ -177,4 +177,8 @@ extern char savedescription[SAVEDESCLEN];  // Description to save in savegame
 /* cph - compatibility level strings */
 extern const char * comp_lev_str[];
 
+static boolean touchpad_triptip;
+static int touchpad_originx;
+static int touchpad_originy;
+
 #endif

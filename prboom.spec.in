@@ -12,7 +12,7 @@ License: GPL
 Packager: Colin Phipps <cph@moria.org.uk>
 Prefix: %{_prefix}
 Autoreq: 0
-Requires: libSDL-1.2.so.0, libSDL_mixer-1.2.so.0, libSDL_net-1.2.so.0, libm.so.6, libc.so.6
+Requires: libSDL-1.2.so.0, libSDL_mixer-1.2.so.0, libSDL_net-1.2.so.0, libm.so.6, libc.so.6, libts-1.0.so.0
 
 %description
 Doom is the classic 3D shoot-em-up game. It must have been one of the best

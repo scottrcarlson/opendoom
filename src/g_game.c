@@ -48,6 +48,8 @@
 #endif
 #include <fcntl.h>
 
+#include <math.h> // Added for Openmoko port
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -104,6 +106,12 @@ boolean         respawnmonsters;
 int             gameepisode;
 int             gamemap;
 boolean         paused;
+
+// SCarlson - Finger-Tipping
+//static float touchpad_triptip;
+//static int touchpad_originx;
+//static int touchpad_originy;
+
 // CPhipps - moved *_loadgame vars here
 static boolean forced_loadgame = false;
 static boolean command_loadgame = false;
@@ -350,7 +358,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (gamekeydown[key_up])
     forward += forwardmove[speed];
-  if (gamekeydown[key_down])
+  if (gamekeydown[key_down]) 
     forward -= forwardmove[speed];
   if (joyymove < 0)
     forward += forwardmove[speed];
@@ -367,9 +375,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (gamekeydown[key_fire] || mousebuttons[mousebfire] ||
       joybuttons[joybfire])
     cmd->buttons |= BT_ATTACK;
-
-  if (gamekeydown[key_use] || joybuttons[joybuse])
-    {
+  
+ if (gamekeydown[key_use] || joybuttons[joybuse])
+   {
       cmd->buttons |= BT_USE;
       // clear double clicks if hit use button
       dclicks = 0;
@@ -651,6 +659,21 @@ static void G_DoLoadLevel (void)
 
 boolean G_Responder (event_t* ev)
 {
+
+  ////////////////  
+  // openmoko
+  // touch screen variables
+  int touchpad_height=80;
+  int touchpad_width=80;
+
+  //int touchpad_originx = -1;  // Finger-Tipping Origin
+  //int touchpad_originy = -1;
+  boolean touchpad_skiptip = false;  // Are we skipping the tipping?
+  //  boolean touchpad_triptip = false;  // Have we tripped a tip?
+  float touchpad_magnitude = 0;     // resultant tipping vector
+  float touchpad_theta = 0;
+  //////////
+
   // allow spy mode changes even during the demo
   // killough 2/22/98: even during DM demo
   //
@@ -729,11 +752,14 @@ boolean G_Responder (event_t* ev)
       if (ev->data1 <NUMKEYS)
         gamekeydown[ev->data1] = false;
       return false;   // always let key up events filter down
-
+      
     case ev_mouse:
+
+  
       mousebuttons[0] = ev->data1 & 1;
-      mousebuttons[1] = ev->data1 & 2;
-      mousebuttons[2] = ev->data1 & 4;
+
+      //mousebuttons[1] = ev->data1 & 2;
+      //mousebuttons[2] = ev->data1 & 4;
       /*
        * bmead@surfree.com
        * Modified by Barry Mead after adding vastly more resolution
@@ -741,8 +767,159 @@ boolean G_Responder (event_t* ev)
        * Removed the mouseSensitivity "*4" to allow more low end
        * sensitivity resolution especially for lsdoom users.
        */
-      mousex += (ev->data2*(mouseSensitivity_horiz))/10;  /* killough */
-      mousey += (ev->data3*(mouseSensitivity_vert))/10;  /*Mead rm *4 */
+      //mousex += (ev->data2*(mouseSensitivity_horiz))/10;  /* killough */
+      //mousey += (ev->data3*(mouseSensitivity_vert))/10;  /*Mead rm *4 */
+  
+      ///////////////
+      //// Openmoko
+      //////////////////
+    
+      
+      // Lets initialize these guys for the next cycle, this is part of my 
+      // initial circumvention of the mouse for the touchscreen
+      mousex= ev->data2;
+      mousey = ev->data3;
+      touchpad_skiptip = false;   // Reset the tip skip flag
+      gamekeydown[key_up] = 0;
+      gamekeydown[key_down] = 0;
+      gamekeydown[key_left] = 0;
+      gamekeydown[key_right] = 0;
+      gamekeydown[key_fire] = 0;
+      gamekeydown[key_use] = 0;
+      gamekeydown[key_weapontoggle]=0;
+      gamekeydown[key_autorun]=true;
+      
+ 
+      if (mousex < 80 && mousey >190)
+	{
+	  gamekeydown[key_fire]=true;
+	  touchpad_skiptip=true;
+	}
+      if (mousex < 80 && mousey >140 && mousey <180)
+	{
+	  gamekeydown[key_use]=true;
+	  touchpad_skiptip=true;
+	} 
+      if (mousex < 80 && mousey >90 && mousey <130)
+	{
+	  gamekeydown[key_weapontoggle]=true;
+	  touchpad_skiptip=true;
+	} 
+      
+      /////////////////////////////////
+      // Finger-Tipping Proto-type
+      /// -scarlson
+
+      // Has the user removed their finger?
+      //      fprintf(stderr,"before %d",touchpad_triptip);      
+      if (!mousebuttons[0]) 
+	{ 
+	  touchpad_triptip = false;
+	  fprintf(stderr,"Lost Finger\n");
+	}
+      //fprintf(stderr,"after %d",touchpad_triptip);   
+   
+      // Have we already started a tipping event?
+      if (touchpad_triptip && !touchpad_skiptip)
+	{
+	  touchpad_theta = atan((mousey - touchpad_originy)/(mousex - touchpad_originx));
+	  fprintf(stderr,"oX %d   X %d   oY %d   Y %d  tripped %d\n",touchpad_originx, mousex, touchpad_originy,mousey,touchpad_triptip); 
+	  fprintf(stderr,"prescaled Tipping %f\n ",touchpad_theta);
+	  touchpad_theta = touchpad_theta * (180 / 3.14159265359);
+	  touchpad_magnitude = sqrt(pow((mousey - touchpad_originy),2) + pow((mousex - touchpad_originx),2));
+	  fprintf(stderr,"Tipping %f at %f\n",touchpad_magnitude,touchpad_theta);
+	}
+
+      // Have we already caught it? We only want to record the origin once.. 
+      if (!touchpad_triptip && !touchpad_skiptip && mousebuttons[0]==1)
+	{
+	  fprintf(stderr,"Caught a Finger Tip.\n");
+	  touchpad_originx = mousex;    // record the origin
+	  touchpad_originy = mousey;
+	  touchpad_triptip = true;      // We have caught a tipping event
+	}
+      
+      
+
+
+      mousex = 0;
+      mousey = 0;
+      
+      /*if (mousex > 160 && mousex < 200 && mousey >80 && mousey <120)
+	{
+	  gamekeydown[key_up]=true;
+	  gamekeydown[key_left]=true;
+
+	}
+      if (mousex > 200 && mousex < 280 && mousey >80 && mousey <160)
+	{
+	  gamekeydown[key_up]=true;
+	}
+      if (mousex > 280 &&  mousey >80 &&  mousey <120)
+	{
+	  gamekeydown[key_up]=true;
+	  gamekeydown[key_right]=true;
+	}
+      if (mousex > 160 && mousex < 200 && mousey >120 && mousey <200)
+	{
+	  gamekeydown[key_left]=true;
+	}
+      if (mousex > 280 && mousey >120 && mousey <200)
+	{
+	  gamekeydown[key_right]=true;
+	}
+      if (mousex > 160 && mousex < 200 && mousey >200)
+	{
+	  gamekeydown[key_down]=true;
+	  gamekeydown[key_left]=true;
+	}
+      if (mousex > 200 && mousex < 280 && mousey >160)
+	{
+	  gamekeydown[key_down]=true;
+	}
+      if (mousex > 280 && mousey >200)
+	{
+	  gamekeydown[key_down]=true;
+	  gamekeydown[key_right]=true;
+	  }*/
+	  /*if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 > 74 && ev->data3 <165)
+	    {
+	      gamekeydown[key_fire] = true;
+	      fprintf(stderr,"caught key fire\n");
+	    }
+	  if ( ev->data2 < 70 && ev->data3 < 50)
+	    {
+	      ch = key_use;
+	      fprintf(stderr,"caught key use\n");
+	    }
+
+	  if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 > 170 )
+	    {
+	      gamekeydown[key_down] = true;
+	      fprintf(stderr,"caught key down\n");
+	    }
+	  if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 < 70 )
+	    {
+	      gamekeydown[key_up] = true;
+	      fprintf(stderr,"caught key up\n");
+	    }
+	  if ( ev->data2 < 70 && ev->data3 < 165  && ev->data3 > 75 )
+	    {
+	      gamekeydown[key_left] = true;	  
+	      fprintf(stderr,"caught key left\n");
+	    }
+	  
+	  if ( ev->data2 >270 && ev->data3 < 165  && ev->data3 > 75 )
+	    {
+	      gamekeydown[key_right] = true;	  
+	      fprintf(stderr,"caught key right\n");
+	      }*/
+
+	       
+	
+
+       mousebuttons[0] = false; //Not sure why i have this here. Hacky Jacky	
+      
       return true;    // eat events
 
     case ev_joystick:
