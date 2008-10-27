@@ -1,5 +1,5 @@
 /* Emacs style mode select   -*- C++ -*-
- *-----------------------------------------------------------------------------
+s *-----------------------------------------------------------------------------
  *
  *
  *  PrBoom: a Doom port merged with LxDoom and LSDLDoom
@@ -63,6 +63,21 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+//////////////
+/// OpenMoko
+/////////////
+//#include "tslib.h"
+
+//struct tsdev *ts;
+//char *tsdevice=NULL;
+
+//extern int ts_config(struct tsdev *);
+///////////////
+///// OpenMoko
+//////////////
+
+
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -346,7 +361,7 @@ uid_t stored_euid = -1;
 int main(int argc, char **argv)
 {
 
-    char buf[36];                                                            
+  /*  char buf[36];                                                            
     char tok[100];                                                            
     char *search = " :";                                                      
     int i;
@@ -366,9 +381,38 @@ int main(int argc, char **argv)
       //printf( "samp.pressure: %s\n", strtok( NULL, search ));                
       printf(" catches %d\n",i);
     }
-  }   
+    } */
+  /*  ts = ts_open("/dev/input/event0", 0);
+  if (!ts) {
+    perror("ts_open");
+    exit(1);
+  }
+
+  if (ts_config(ts)) {
+    perror("ts_config");
+    exit(1);
+  }
+
+  while (1) {
+    struct ts_sample samp;
+    int ret;
+
+    ret = ts_read(ts, &samp, 1);
+
+    if (ret < 0) {
+      perror("ts_read");
+      exit(1);
+    }
+
+    if (ret != 1)
+      continue;
+
+    printf("%ld.%06ld: %6d %6d %6d\n", samp.tv.tv_sec, samp.tv.tv_usec, samp.x, samp.y, samp.pressure);
+
+    }
+  
     
-    return(8);
+    return(8);*/
 
 #ifdef SECURE_UID
   /* First thing, revoke setuid status (if any) */

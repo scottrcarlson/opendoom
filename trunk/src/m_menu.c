@@ -1,3 +1,4 @@
+
 /* Emacs style mode select   -*- C++ -*-
  *-----------------------------------------------------------------------------
  *
@@ -1085,7 +1086,14 @@ void M_QuitDOOM(int choice)
   else         // killough 1/18/98: fix endgame message calculation:
     sprintf(endstring,"%s\n\n%s", endmsg[gametic%(NUM_QUITMESSAGES-1)+1], s_DOSY);
 
-  M_StartMessage(endstring,M_QuitResponse,true);
+
+////////////////////
+//OpenMoko Debugging//////  
+//M_StartMessage(endstring,M_QuitResponse,true);
+M_QuitResponse('y');
+////END openmoko
+/////////////////
+
 }
 
 /////////////////////////////
@@ -4090,7 +4098,7 @@ boolean M_Responder (event_t* ev) {
   static int lasty     = 0;
   static int mousex    = 0;
   static int lastx     = 0;
-
+  static int  tempcounter =0;
   ch = -1; // will be changed to a legit char if we're going to use it here
 
 
@@ -4149,156 +4157,119 @@ boolean M_Responder (event_t* ev) {
   } else {
 
 ////////////////////////////////
-// Process Openmoko Touchsceen
+// Process Openmoko Touchscreen
 
-/* 
-  if (evento.button.x>300 && evento.button.y>70){
-    ch = key_menu_up;
-    fprintf(stderr, "Got an UP");
-  }
-  else if (evento.button.x<=300 && evento.button.y>180){
-    fprintf(stderr, "Got an down");
-    ch = key_menu_down;
-  }
-  else if (evento.button.x<=300 && evento.button.y>50){
-    fprintf(stderr, "Got an enter");
-    ch = key_menu_enter;
-  }
-  else if (evento.button.x==319 && evento.button.y==0){
-	    fprintf(stderr, "Got an esc");
+   
+    if (ev->type == ev_mouse) { 
+     
+      //fprintf(stderr,"tc -- %d\n",tempcounter)
+      tempcounter += 1;
+      //fprintf(stderr,"Menuactive %d",menuactive);
+      if (tempcounter >7) {
+	tempcounter =0;
+      
+	if ( ev->data2 > 250 && ev->data3 < 80)
+	  {
 	    ch = key_menu_escape;
-  } 
-  else if (evento.button.x==319 && evento.button.y==0){
-    fprintf(stderr, "Got a y");
-    ch = 'y';
-    }*/
-  
+	    fprintf(stderr,"caught escape\n");
+	  }
+
+	if (menuactive) 
+	  {
+	    if ( ev->data2 > 110 && ev->data2 <210 && ev->data3 > 70 && ev->data3 <170)
+	      {
+		ch =key_menu_enter;
+		fprintf(stderr,"caught menu_enter\n");
+	      }
+	    
+	    if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 > 170 )
+	      {
+		ch = key_menu_down;
+		fprintf(stderr,"caught menu_down\n");
+	      }
+	    if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 < 70 )
+	      {
+		ch = key_menu_up;
+		fprintf(stderr,"caught menu_up\n");
+	      }
+	    if ( ev->data2 < 70 && ev->data3 < 165  && ev->data3 > 75 )
+	      {
+		ch = key_menu_left;
+		fprintf(stderr,"caught menu_left\n");
+	      }       
+	    
+	    if ( ev->data2 >270 && ev->data3 < 165  && ev->data3 > 75 )
+	      {
+		ch = key_menu_right;
+		fprintf(stderr,"caught menu_right\n");
+	      }
+	  }
+      }
+    }
 
 // End OpenMoko Touchscreen
 ////////////////////////////////////
 
-    if (ev->type == ev_mouse) {
+        // Process keyboard input
 
-    }
-
-   // Process mouse input
-
-   /*     if (ev->type == ev_mouse && mousewait < I_GetTime()) {
-      mousey += ev->data3;
-      if (mousey < lasty-30)
-	{
-	  ch = key_menu_down;                            // phares 3/7/98
-	  mousewait = I_GetTime() + 5;
-	  mousey = lasty -= 30;
-	}
-      else if (mousey > lasty+30)
-	{
-	  ch = key_menu_up;                              // phares 3/7/98
-	  mousewait = I_GetTime() + 5;
-	  mousey = lasty += 30;
-	}
-      
-      mousex += ev->data2;
-      if (mousex < lastx-30)
-	{
-	  ch = key_menu_left;                            // phares 3/7/98
-	  mousewait = I_GetTime() + 5;
-	  mousex = lastx -= 30;
-	}
-      else if (mousex > lastx+30)
-	{
-	  ch = key_menu_right;                           // phares 3/7/98
-	  mousewait = I_GetTime() + 5;
-	  mousex = lastx += 30;
-	}
-      
-      if (ev->data1&1)
-	{
-	  ch = key_menu_enter;                           // phares 3/7/98
-	  mousewait = I_GetTime() + 15;
-	}
-      
-      if (ev->data1&2) 
-	{
-	  ch = key_menu_backspace;                       // phares 3/7/98
-	  mousewait = I_GetTime() + 15;
-	}
-
-      // phares 4/4/98:
-      // Handle mouse button 3, and allow it to pass down
-      // to where key binding can eat it.
-      
-
-      if (setup_active && set_keybnd_active)
-  if (ev->data1&4)
-    {
-    ch = 0; // meaningless, just to get you past the check for -1
-    mousewait = I_GetTime() + 15;
-    }
-    }
-    
-    else*/
-
-      // Process keyboard input
-
-  if (ev->type == ev_keydown)
-    {
-      ch = ev->data1;               // phares 4/11/98:
-      if (ch == KEYD_RSHIFT)        // For chat string processing, need
-	shiftdown = true;           // to know when shift key is up or
-    }                             // down so you can get at the !,#,
-  else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
-    if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
-      shiftdown = false;          // so we need to note the difference
-      }                                 // here using the 'shiftdown' boolean.
-
+    if (ev->type == ev_keydown)
+      {
+	ch = ev->data1;               // phares 4/11/98:
+	if (ch == KEYD_RSHIFT)        // For chat string processing, need
+	  shiftdown = true;           // to know when shift key is up or
+      }                             // down so you can get at the !,#,
+    else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
+      if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
+	shiftdown = false;          // so we need to note the difference
+  }                                 // here using the 'shiftdown' boolean.
+  
   if (ch == -1)
     return false; // we can't use the event here
-
+  
   // Save Game string input
-
+  
   if (saveStringEnter) {
     if (ch == key_menu_backspace)                            // phares 3/7/98
       {
-      if (saveCharIndex > 0)
+	if (saveCharIndex > 0)
         {
-        saveCharIndex--;
-        savegamestrings[saveSlot][saveCharIndex] = 0;
+	  saveCharIndex--;
+	  savegamestrings[saveSlot][saveCharIndex] = 0;
         }
       }
-
-      else if (ch == key_menu_escape)                    // phares 3/7/98
-  {
-    saveStringEnter = 0;
-    strcpy(&savegamestrings[saveSlot][0],saveOldString);
-  }
-
-      else if (ch == key_menu_enter)                     // phares 3/7/98
-  {
-    saveStringEnter = 0;
-    if (savegamestrings[saveSlot][0])
-      M_DoSave(saveSlot);
-  }
-
-      else
-  {
-  ch = toupper(ch);
-  if (ch >= 32 && ch <= 127 &&
-      saveCharIndex < SAVESTRINGSIZE-1 &&
-      M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
-    {
-    savegamestrings[saveSlot][saveCharIndex++] = ch;
-    savegamestrings[saveSlot][saveCharIndex] = 0;
-    }
-  }
+    
+    else if (ch == key_menu_escape)                    // phares 3/7/98
+      {
+	saveStringEnter = 0;
+	strcpy(&savegamestrings[saveSlot][0],saveOldString);
+      }
+    
+    else if (ch == key_menu_enter)                     // phares 3/7/98
+      {
+	saveStringEnter = 0;
+	if (savegamestrings[saveSlot][0])
+	  M_DoSave(saveSlot);
+      }
+    
+    else
+      {
+	ch = toupper(ch);
+	if (ch >= 32 && ch <= 127 &&
+	    saveCharIndex < SAVESTRINGSIZE-1 &&
+	    M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
+	  {
+	    savegamestrings[saveSlot][saveCharIndex++] = ch;
+	    savegamestrings[saveSlot][saveCharIndex] = 0;
+	  }
+      }
     return true;
   }
-
+  
   // Take care of any messages that need input
-
+  
   if (messageToPrint) {
     if (messageNeedsInput == true &&
-  !(ch == ' ' || ch == 'n' || ch == 'y' || ch == key_escape)) // phares
+	!(ch == ' ' || ch == 'n' || ch == 'y' || ch == key_escape)) // phares
       return false;
 
     menuactive = messageLastMenuActive;
@@ -4319,283 +4290,290 @@ boolean M_Responder (event_t* ev) {
     M_ScreenShot ();
     return true;
     }
-
+  
   // If there is no active menu displayed...
-
+  
   if (!menuactive) {                                           // phares
     if (ch == key_autorun)      // Autorun                          //  V
       {
-      autorun = !autorun;
-      return true;
+	autorun = !autorun;
+	return true;
       }
-
+    
     if (ch == key_help)      // Help key
       {
-      M_StartControlPanel ();
+	M_StartControlPanel ();
 
-      currentMenu = &HelpDef;         // killough 10/98: new help screen
-
-      itemOn = 0;
-      S_StartSound(NULL,sfx_swtchn);
-      return true;
+	currentMenu = &HelpDef;         // killough 10/98: new help screen
+	
+	itemOn = 0;
+	S_StartSound(NULL,sfx_swtchn);
+	return true;
       }
-
+    
     if (ch == key_savegame)     // Save Game
       {
-      M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);
-      M_SaveGame(0);
-      return true;
+	M_StartControlPanel();
+	S_StartSound(NULL,sfx_swtchn);
+	M_SaveGame(0);
+	return true;
       }
-
+    
     if (ch == key_loadgame)     // Load Game
       {
-      M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);
-      M_LoadGame(0);
-      return true;
+	M_StartControlPanel();
+	S_StartSound(NULL,sfx_swtchn);
+	M_LoadGame(0);
+	return true;
       }
-
+    
     if (ch == key_soundvolume)      // Sound Volume
       {
-      M_StartControlPanel ();
-      currentMenu = &SoundDef;
-      itemOn = sfx_vol;
-      S_StartSound(NULL,sfx_swtchn);
-      return true;
+	M_StartControlPanel ();
+	currentMenu = &SoundDef;
+	itemOn = sfx_vol;
+	S_StartSound(NULL,sfx_swtchn);
+	return true;
       }
-
+    
     if (ch == key_quicksave)      // Quicksave
       {
-      S_StartSound(NULL,sfx_swtchn);
-      M_QuickSave();
-      return true;
+	S_StartSound(NULL,sfx_swtchn);
+	M_QuickSave();
+	return true;
       }
 
     if (ch == key_endgame)      // End game
       {
-      S_StartSound(NULL,sfx_swtchn);
-      M_EndGame(0);
-      return true;
+	S_StartSound(NULL,sfx_swtchn);
+	M_EndGame(0);
+	return true;
       }
-
+    
     if (ch == key_messages)      // Toggle messages
       {
-      M_ChangeMessages(0);
-      S_StartSound(NULL,sfx_swtchn);
-      return true;
+	M_ChangeMessages(0);
+	S_StartSound(NULL,sfx_swtchn);
+	return true;
       }
-
+    
     if (ch == key_quickload)      // Quickload
       {
-      S_StartSound(NULL,sfx_swtchn);
-      M_QuickLoad();
-      return true;
+	S_StartSound(NULL,sfx_swtchn);
+	M_QuickLoad();
+	return true;
       }
-
+    
     if (ch == key_quit)       // Quit DOOM
       {
-      S_StartSound(NULL,sfx_swtchn);
-      M_QuitDOOM(0);
-      return true;
+	S_StartSound(NULL,sfx_swtchn);
+	M_QuitDOOM(1);
+	return true;
       }
-
+    
     if (ch == key_gamma)       // gamma toggle
       {
-      usegamma++;
-      if (usegamma > 4)
-  usegamma = 0;
-      players[consoleplayer].message =
-  usegamma == 0 ? s_GAMMALVL0 :
-  usegamma == 1 ? s_GAMMALVL1 :
-  usegamma == 2 ? s_GAMMALVL2 :
-  usegamma == 3 ? s_GAMMALVL3 :
-  s_GAMMALVL4;
-      V_SetPalette(0);
-      return true;
+	usegamma++;
+	if (usegamma > 4)
+	  usegamma = 0;
+	players[consoleplayer].message =
+	  usegamma == 0 ? s_GAMMALVL0 :
+	  usegamma == 1 ? s_GAMMALVL1 :
+	  usegamma == 2 ? s_GAMMALVL2 :
+	  usegamma == 3 ? s_GAMMALVL3 :
+	  s_GAMMALVL4;
+	V_SetPalette(0);
+	return true;
       }
 
 
     if (ch == key_zoomout)     // zoom out
       {
-      if ((automapmode & am_active) || chat_on)
-        return false;
-      M_SizeDisplay(0);
-      S_StartSound(NULL,sfx_stnmov);
-      return true;
+	if ((automapmode & am_active) || chat_on)
+	  return false;
+	M_SizeDisplay(0);
+	S_StartSound(NULL,sfx_stnmov);
+	return true;
       }
-
+    
     if (ch == key_zoomin)               // zoom in
       {                                 // jff 2/23/98
-      if ((automapmode & am_active) || chat_on)     // allow
-        return false;                   // key_hud==key_zoomin
-      M_SizeDisplay(1);                                             //  ^
-      S_StartSound(NULL,sfx_stnmov);                                //  |
-      return true;                                                  // phares
+	if ((automapmode & am_active) || chat_on)     // allow
+	  return false;                   // key_hud==key_zoomin
+	M_SizeDisplay(1);                                             //  ^
+	S_StartSound(NULL,sfx_stnmov);                                //  |
+	return true;                                                  // phares
       }
-
+    
     if (ch == key_hud)   // heads-up mode
       {
-      if ((automapmode & am_active) || chat_on)    // jff 2/22/98
-        return false;                  // HUD mode control
-      if (screenSize<8)                // function on default F5
-        while (screenSize<8 || !hud_displayed) // make hud visible
-          M_SizeDisplay(1);            // when configuring it
-      else
-        {
-        hud_displayed = 1;               //jff 3/3/98 turn hud on
-        hud_active = (hud_active+1)%3;   // cycle hud_active
-        if (!hud_active)                 //jff 3/4/98 add distributed
-          {
-          hud_distributed = !hud_distributed; // to cycle
-          HU_MoveHud(); //jff 3/9/98 move it now to avoid glitch
-          }
-        }
-      return true;
+	if ((automapmode & am_active) || chat_on)    // jff 2/22/98
+	  return false;                  // HUD mode control
+	if (screenSize<8)                // function on default F5
+	  while (screenSize<8 || !hud_displayed) // make hud visible
+	    M_SizeDisplay(1);            // when configuring it
+	else
+	  {
+	    hud_displayed = 1;               //jff 3/3/98 turn hud on
+	    hud_active = (hud_active+1)%3;   // cycle hud_active
+	    if (!hud_active)                 //jff 3/4/98 add distributed
+	      {
+		hud_distributed = !hud_distributed; // to cycle
+		HU_MoveHud(); //jff 3/9/98 move it now to avoid glitch
+	      }
+	  }
+	return true;
       }
-
+    
     /* killough 10/98: allow key shortcut into Setup menu */
     //Openmoko -- This turns out to be the AUX Button
+    
     if (ch == key_setup) {
-      //M_StartControlPanel();
-      //S_StartSound(NULL,sfx_swtchn);
-      //M_SetupNextMenu(&SetupDef);
+      M_StartControlPanel();
+      S_StartSound(NULL,sfx_swtchn);
+      M_SetupNextMenu(&SetupDef);
       ch=key_menu_escape;
-      //return true;
+      
+      /////////////////////////////////////////
+      ///////// Openmoko Debugging
+      //ch = key_quit;
+      ////////////////////////////////////////
+      
+      return true;
     }
   }
   // Pop-up Main menu?
-
+  
   if (!menuactive)
     {
-    if (ch == key_escape)                                     // phares
-      {
-      M_StartControlPanel ();
-      S_StartSound(NULL,sfx_swtchn);
-      return true;
-      }
-    return false;
+      if (ch == key_escape)                                     // phares
+	{
+	  M_StartControlPanel ();
+	  S_StartSound(NULL,sfx_swtchn);
+	  return true;
+	}
+      return false;
     }
-
+  
   // phares 3/26/98 - 4/11/98:
   // Setup screen key processing
-
+  
   if (setup_active) {
     setup_menu_t* ptr1= current_setup_menu + set_menu_itemon;
     setup_menu_t* ptr2 = NULL;
-
+    
     // phares 4/19/98:
     // Catch the response to the 'reset to default?' verification
     // screen
-
+    
     if (default_verify)
       {
-  if (toupper(ch) == 'Y') {
-    M_ResetDefaults();
-    default_verify = false;
-    M_SelectDone(ptr1);
-  }
+	if (toupper(ch) == 'Y') {
+	  M_ResetDefaults();
+	  default_verify = false;
+	  M_SelectDone(ptr1);
+	}
   else if (toupper(ch) == 'N') {
     default_verify = false;
     M_SelectDone(ptr1);
   }
-  return true;
+	return true;
       }
-
-      // Common processing for some items
-
-      if (setup_select) { // changing an entry
-  if (ch == key_menu_escape) // Exit key = no change
-    {
-    M_SelectDone(ptr1);                           // phares 4/17/98
-    setup_gather = false;   // finished gathering keys, if any
-    return true;
-    }
-
-  if (ptr1->m_flags & S_YESNO) // yes or no setting?
-    {
-    if (ch == key_menu_enter) {
-      *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
-
-      // phares 4/14/98:
-      // If not in demoplayback, demorecording, or netgame,
-      // and there's a second variable in var2, set that
-      // as well
-
-      // killough 8/15/98: add warning messages
-
-      if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-        warn_about_changes(ptr1->m_flags &    // killough 10/98
-         (S_LEVWARN | S_PRGWARN));
-      else
-        M_UpdateCurrent(ptr1->var.def);
-
-      if (ptr1->action)      // killough 10/98
-        ptr1->action();
-    }
-    M_SelectDone(ptr1);                           // phares 4/17/98
-    return true;
-    }
-
-  if (ptr1->m_flags & S_CRITEM)
-    {
-    if (ch != key_menu_enter)
-      {
-      ch -= 0x30; // out of ascii
-      if (ch < 0 || ch > 9)
-        return true; // ignore
-      *ptr1->var.def->location.pi = ch;
-      }
-    if (ptr1->action)      // killough 10/98
-      ptr1->action();
-    M_SelectDone(ptr1);                      // phares 4/17/98
-    return true;
-    }
-
-  if (ptr1->m_flags & S_NUM) // number?
-    {
-      if (setup_gather) { // gathering keys for a value?
-        /* killough 10/98: Allow negatives, and use a more
-         * friendly input method (e.g. don't clear value early,
-         * allow backspace, and return to original value if bad
-         * value is entered).
-         */
-        if (ch == key_menu_enter) {
-    if (gather_count) {     // Any input?
-      int value;
-
-      gather_buffer[gather_count] = 0;
-      value = atoi(gather_buffer);  // Integer value
-
-      if ((ptr1->var.def->minvalue != UL &&
-           value < ptr1->var.def->minvalue) ||
-          (ptr1->var.def->maxvalue != UL &&
-           value > ptr1->var.def->maxvalue))
+    
+    // Common processing for some items
+    
+    if (setup_select) { // changing an entry
+      if (ch == key_menu_escape) // Exit key = no change
+	{
+	  M_SelectDone(ptr1);                           // phares 4/17/98
+	  setup_gather = false;   // finished gathering keys, if any
+	  return true;
+	}
+      
+      if (ptr1->m_flags & S_YESNO) // yes or no setting?
+	{
+	  if (ch == key_menu_enter) {
+	    *ptr1->var.def->location.pi = !*ptr1->var.def->location.pi; // killough 8/15/98
+	    
+	    // phares 4/14/98:
+	    // If not in demoplayback, demorecording, or netgame,
+	    // and there's a second variable in var2, set that
+	    // as well
+	    
+	    // killough 8/15/98: add warning messages
+	    
+	    if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
+	      warn_about_changes(ptr1->m_flags &    // killough 10/98
+				 (S_LEVWARN | S_PRGWARN));
+	    else
+	      M_UpdateCurrent(ptr1->var.def);
+	    
+	    if (ptr1->action)      // killough 10/98
+	      ptr1->action();
+	  }
+	  M_SelectDone(ptr1);                           // phares 4/17/98
+	  return true;
+	}
+      
+      if (ptr1->m_flags & S_CRITEM)
+	{
+	  if (ch != key_menu_enter)
+	    {
+	      ch -= 0x30; // out of ascii
+	      if (ch < 0 || ch > 9)
+		return true; // ignore
+	      *ptr1->var.def->location.pi = ch;
+	    }
+	  if (ptr1->action)      // killough 10/98
+	    ptr1->action();
+	  M_SelectDone(ptr1);                      // phares 4/17/98
+	  return true;
+	}
+      
+      if (ptr1->m_flags & S_NUM) // number?
+	{
+	  if (setup_gather) { // gathering keys for a value?
+	    /* killough 10/98: Allow negatives, and use a more
+	     * friendly input method (e.g. don't clear value early,
+	     * allow backspace, and return to original value if bad
+	     * value is entered).
+	     */
+	    if (ch == key_menu_enter) {
+	      if (gather_count) {     // Any input?
+		int value;
+		
+		gather_buffer[gather_count] = 0;
+		value = atoi(gather_buffer);  // Integer value
+		
+		if ((ptr1->var.def->minvalue != UL &&
+		     value < ptr1->var.def->minvalue) ||
+		    (ptr1->var.def->maxvalue != UL &&
+		     value > ptr1->var.def->maxvalue))
         warn_about_changes(S_BADVAL);
-      else {
-        *ptr1->var.def->location.pi = value;
-
-        /* killough 8/9/98: fix numeric vars
-         * killough 8/15/98: add warning message
+		else {
+		  *ptr1->var.def->location.pi = value;
+		  
+		  /* killough 8/9/98: fix numeric vars
+		   * killough 8/15/98: add warning message
          */
-        if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
-          warn_about_changes(ptr1->m_flags &
-           (S_LEVWARN | S_PRGWARN));
-        else
-          M_UpdateCurrent(ptr1->var.def);
+		  if (ptr1->m_flags & (S_LEVWARN | S_PRGWARN))
+		    warn_about_changes(ptr1->m_flags &
+				       (S_LEVWARN | S_PRGWARN));
+		  else
+		    M_UpdateCurrent(ptr1->var.def);
 
-        if (ptr1->action)      // killough 10/98
-          ptr1->action();
-      }
-    }
-    M_SelectDone(ptr1);     // phares 4/17/98
-    setup_gather = false; // finished gathering keys
-    return true;
-        }
-
-        if (ch == key_menu_backspace && gather_count) {
-    gather_count--;
-    return true;
+		  if (ptr1->action)      // killough 10/98
+		    ptr1->action();
+		}
+	      }
+	      M_SelectDone(ptr1);     // phares 4/17/98
+	      setup_gather = false; // finished gathering keys
+	      return true;
+	    }
+	    
+	    if (ch == key_menu_backspace && gather_count) {
+	      gather_count--;
+	      return true;
         }
 
         if (gather_count >= MAXGATHER)
@@ -5370,7 +5348,7 @@ void M_Drawer (void)
 
 void M_ClearMenus (void)
 {
-  menuactive = 0;
+  menuactive = false;
   print_warning_about_changes = 0;     // killough 8/15/98
   default_verify = 0;                  // killough 10/98
 
