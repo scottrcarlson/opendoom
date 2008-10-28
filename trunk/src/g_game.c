@@ -670,9 +670,11 @@ boolean G_Responder (event_t* ev)
  
   boolean touchscreen_skiptip = false;  // Are we skipping the tipping?
  
-  
-  float touchscreen_magnitude = 0;     // resultant tipping vector
-  float touchscreen_theta = 0;
+  int touchscreen_deltax = 0;        
+  int touchscreen_deltay = 0; 
+  int touchscreen_magnitude = 0;     // (let's not use floats?) resultant tipping vector
+  int touchscreen_theta = 0;
+ 
   //////////
 
   // allow spy mode changes even during the demo
@@ -780,14 +782,14 @@ boolean G_Responder (event_t* ev)
       mousex= ev->data2;
       mousey = ev->data3;
       touchscreen_skiptip = false;   // Reset the tip skip flag
-      /*      gamekeydown[key_up] = 0;
+      gamekeydown[key_up] = 0;
       gamekeydown[key_down] = 0;
       gamekeydown[key_left] = 0;
       gamekeydown[key_right] = 0;
       gamekeydown[key_fire] = 0;
       gamekeydown[key_use] = 0;
       gamekeydown[key_weapontoggle]=0;
-      gamekeydown[key_autorun]=true;*/
+      gamekeydown[key_autorun]=true;
       
  
       if (mousex < 80 && mousey >190)
@@ -804,7 +806,7 @@ boolean G_Responder (event_t* ev)
 	{
 	  gamekeydown[key_weapontoggle]=true;
 	  touchscreen_skiptip=true;
-	} 
+	  }
       
       /////////////////////////////////
       // Finger-Tipping Proto-type
@@ -814,32 +816,41 @@ boolean G_Responder (event_t* ev)
       if (!mousebuttons[0]) 
 	{ 
 	  touchscreen_triptip = false;
-	  // fprintf(stderr,"Lost Finger\n\n");
+	  fprintf(stderr,"Lost a Finger\n\n");
 	}
-      //	fprintf(stderr,"\n\n x %d  y %d \n\n",mousex,mousey);
 
       // Have we already started a tipping event?
       else if (touchscreen_triptip && !touchscreen_skiptip)
 	{
-	  touchscreen_theta = atan((mousey - touchscreen_originy)/(mousex - touchscreen_originx));
-	  touchscreen_theta = touchscreen_theta * (180 / 3.14159265359);
-	  touchscreen_magnitude = sqrt(pow((mousey - touchscreen_originy),2) + pow((mousex - touchscreen_originx),2));
-	  //fprintf(stderr,"Tipping %d\n",touchscreen_theta);
-	  //if ( touchscreen_theta == 90 ) gamekeydown[key_up]=true;	  
-	  //if ( touchscreen_theta == 0 ) gamekeydown[key_right]=true;	  
-	  //if ( touchscreen_theta == 180 ) gamekeydown[key_left]=true;
-	    
-	}
+	  touchscreen_deltax = mousex - touchscreen_originx;	  
+	  touchscreen_deltay = mousey - touchscreen_originy;
+	  touchscreen_magnitude = sqrt( pow( (touchscreen_deltay), 2) + pow( (touchscreen_deltax), 2));
 
+	  if (touchscreen_magnitude > 4)
+	    {  
+	      touchscreen_theta =atan2(touchscreen_deltay,touchscreen_deltax) * -57.29577951; // theta * 180/pi
+	      if ( touchscreen_theta < 0 ) touchscreen_theta += 360;
+	    }
+	  else touchscreen_theta = -1;
+	  
+	  fprintf(stderr,"- Tipping  [ %d,%d, %d %d degrees ]\n", mousex, mousey, touchscreen_magnitude,touchscreen_theta);
+	  
+	  if ( touchscreen_theta > 45 && touchscreen_theta < 135 ) gamekeydown[key_up]=true;
+	  if ( touchscreen_theta > 135 && touchscreen_theta < 225 ) gamekeydown[key_left]=true;
+	  if ( touchscreen_theta > 225 && touchscreen_theta < 315 ) gamekeydown[key_down]=true;
+	  if ( touchscreen_theta > 315 && touchscreen_theta < 360)  gamekeydown[key_right]=true;	  
+	  if ( touchscreen_theta > 0 && touchscreen_theta < 45)  gamekeydown[key_right]=true;
+	
+}
 
       // Have we already caught it? We only want to record the origin once.. 
       else if (mousex != 0 && mousey != 0 && !touchscreen_triptip && !touchscreen_skiptip && mousebuttons[0])
 	{
-	  //fprintf(stderr,"Caught a Finger Tip.  ---   [x%d  y%d] \n",mousex,mousey);
+	  fprintf(stderr,"Caught a Finger Tip.  ---   [x%d  y%d] \n",mousex,mousey);
 	  touchscreen_originx =mousex;    // record the origin
 	  touchscreen_originy =mousey;
 	  touchscreen_triptip = true;      // We have caught a tipping event
-	  }
+	}
      
       
 
