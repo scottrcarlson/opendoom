@@ -4104,7 +4104,7 @@ boolean M_Responder (event_t* ev) {
 
 
   // Process joystick input
-  if (ev->type == ev_joystick && joywait < I_GetTime())  {
+    if (ev->type == ev_joystick && joywait < I_GetTime())  {
     if (ev->data3 == -1)
       {
 	ch = key_menu_up;                                // phares 3/7/98
@@ -4137,7 +4137,7 @@ boolean M_Responder (event_t* ev) {
       {
 	ch = key_menu_backspace;                         // phares 3/7/98
 	joywait = I_GetTime() + 5;
-      }
+	}
 
     // phares 4/4/98:
     // Handle joystick buttons 3 and 4, and allow them to pass down
@@ -4168,11 +4168,11 @@ boolean M_Responder (event_t* ev) {
       if (tempcounter >7) {
 	tempcounter =0;
       
-	/*if ( ev->data2 > 250 && ev->data3 < 80)
+	if ( ev->data2 > 250 && ev->data3 < 80)
 	  {
 	    ch = key_menu_escape;
 	    fprintf(stderr,"caught escape\n");
-	    }*/
+	  }
 
 	if (menuactive) 
 	  {
@@ -4431,8 +4431,8 @@ boolean M_Responder (event_t* ev) {
     if (ch == key_setup) {
       
       
-      M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);  
+      //M_StartControlPanel();
+      //S_StartSound(NULL,sfx_swtchn);  
       ch=key_menu_escape;
       
       return true;

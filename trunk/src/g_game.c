@@ -685,25 +685,24 @@ boolean G_Responder (event_t* ev)
   if (ev->data1 == key_spy && netgame && (demoplayback || !deathmatch) &&
       gamestate == GS_LEVEL)
     {
-      if (ev->type == ev_keyup)
-  gamekeydown[key_spy] = false;
+      if (ev->type == ev_keyup)  gamekeydown[key_spy] = false;
       if (ev->type == ev_keydown && !gamekeydown[key_spy])
-  {
-    gamekeydown[key_spy] = true;
-    do                                          // spy mode
-      if (++displayplayer >= MAXPLAYERS)
-        displayplayer = 0;
-    while (!playeringame[displayplayer] && displayplayer!=consoleplayer);
-
-    ST_Start();    // killough 3/7/98: switch status bar views too
-    HU_Start();
-    S_UpdateSounds(players[displayplayer].mo);
-    R_ActivateSectorInterpolations();
-    R_SmoothPlaying_Reset(NULL);
-  }
+	{
+	  gamekeydown[key_spy] = true;
+	  do                                          // spy mode
+	    if (++displayplayer >= MAXPLAYERS)
+	      displayplayer = 0;
+	  while (!playeringame[displayplayer] && displayplayer!=consoleplayer);
+	  
+	  ST_Start();    // killough 3/7/98: switch status bar views too
+	  HU_Start();
+	  S_UpdateSounds(players[displayplayer].mo);
+	  R_ActivateSectorInterpolations();
+	  R_SmoothPlaying_Reset(NULL);
+	}
       return true;
     }
-
+  
   // any other key pops up menu if in demos
   //
   // killough 8/2/98: enable automap in -timedemo demos
@@ -715,30 +714,30 @@ boolean G_Responder (event_t* ev)
     {
       // killough 9/29/98: allow user to pause demos during playback
       if (ev->type == ev_keydown && ev->data1 == key_pause)
-  {
-    if (paused ^= 2)
-      S_PauseSound();
-    else
-      S_ResumeSound();
-    return true;
-  }
-
+	{
+	  if (paused ^= 2)
+	    S_PauseSound();
+	  else
+	    S_ResumeSound();
+	  return true;
+	}
+      
       // killough 10/98:
       // Don't pop up menu, if paused in middle
       // of demo playback, or if automap active.
       // Don't suck up keys, which may be cheats
-
+      
       return gamestate == GS_DEMOSCREEN &&
-  !(paused & 2) && !(automapmode & am_active) &&
-  ((ev->type == ev_keydown) ||
-   (ev->type == ev_mouse && ev->data1) ||
-   (ev->type == ev_joystick && ev->data1)) ?
-  M_StartControlPanel(), true : false;
+	!(paused & 2) && !(automapmode & am_active) &&
+	((ev->type == ev_keydown) ||
+	 (ev->type == ev_mouse && ev->data1) ||
+	 (ev->type == ev_joystick && ev->data1)) ?
+	M_StartControlPanel(), true : false;
     }
-
+  
   if (gamestate == GS_FINALE && F_Responder(ev))
     return true;  // finale ate the event
-
+  
   switch (ev->type)
     {
     case ev_keydown:
@@ -786,13 +785,15 @@ boolean G_Responder (event_t* ev)
       gamekeydown[key_down] = 0;
       gamekeydown[key_left] = 0;
       gamekeydown[key_right] = 0;
+      gamekeydown[key_strafeleft] = 0;
+      gamekeydown[key_straferight] = 0;
       gamekeydown[key_fire] = 0;
       gamekeydown[key_use] = 0;
       gamekeydown[key_weapontoggle]=0;
       gamekeydown[key_autorun]=true;
       
  
-      if (mousex < 80 && mousey >190)
+      if (mousex < 80 && mousey >185)
 	{
 	  gamekeydown[key_fire]=true;
 	  touchscreen_skiptip=true;
@@ -811,7 +812,7 @@ boolean G_Responder (event_t* ev)
       /////////////////////////////////
       // Finger-Tipping Proto-type
       /// -SCarlson
-
+      /////////////////////////////////
       // Has the user removed their finger?
       if (!mousebuttons[0]) 
 	{ 
@@ -819,29 +820,42 @@ boolean G_Responder (event_t* ev)
 	  fprintf(stderr,"Lost a Finger\n\n");
 	}
 
-      // Have we already started a tipping event?
+      // Have we already started a tippying event?
       else if (touchscreen_triptip && !touchscreen_skiptip)
 	{
 	  touchscreen_deltax = mousex - touchscreen_originx;	  
-	  touchscreen_deltay = mousey - touchscreen_originy;
-	  touchscreen_magnitude = sqrt( pow( (touchscreen_deltay), 2) + pow( (touchscreen_deltax), 2));
+	  touchscreen_deltay = mousey - touchscreen_originy;  
+	  touchscreen_magnitude = sqrt( pow( (touchscreen_deltay), 2) + pow( (touchscreen_deltax), 2));//pythagora
 
-	  if (touchscreen_magnitude > 4)
+	  if (touchscreen_magnitude > 5)  // Dead Zone
 	    {  
 	      touchscreen_theta =atan2(touchscreen_deltay,touchscreen_deltax) * -57.29577951; // theta * 180/pi
-	      if ( touchscreen_theta < 0 ) touchscreen_theta += 360;
+	      if ( touchscreen_theta < 0 ) touchscreen_theta += 360;// converting -deg values to continuous 0-359deg
+	      
+	      if ( touchscreen_theta > 60 && touchscreen_theta < 120 ) gamekeydown[key_up]=true;
+	      if ( touchscreen_theta > 240 && touchscreen_theta < 300 ) gamekeydown[key_down]=true;
+	      if ( touchscreen_magnitude > 10  && touchscreen_magnitude <= 50) 
+		{
+		  if ( touchscreen_theta > 160 && touchscreen_theta <= 210 ) gamekeydown[key_left]=true;
+		  if ( touchscreen_theta > 330 && touchscreen_theta <= 360)  gamekeydown[key_right]=true;	  
+		  if ( touchscreen_theta > 0 && touchscreen_theta <= 30)  gamekeydown[key_right]=true;
+		  
+		  if ( touchscreen_theta > 120 && touchscreen_theta <= 160 ) { gamekeydown[key_up]=true; gamekeydown[key_left]=true; }
+		  if ( touchscreen_theta > 30 && touchscreen_theta <= 60) { gamekeydown[key_up]=true; gamekeydown[key_right]=true; }
+		  if ( touchscreen_theta > 210 && touchscreen_theta <= 240)  { gamekeydown[key_down]=true; gamekeydown[key_left]=true; }
+		  if ( touchscreen_theta > 300 && touchscreen_theta <= 330)  { gamekeydown[key_down]=true;gamekeydown[key_right]=true; }
+		}
+	      else if( touchscreen_magnitude > 50)     
+		{
+		  if ( touchscreen_theta > 160 && touchscreen_theta < 210 ) gamekeydown[key_strafeleft]=true;
+		  if ( touchscreen_theta > 330 && touchscreen_theta <= 360) gamekeydown[key_straferight]= true;
+		  if ( touchscreen_theta > 0 && touchscreen_theta < 30 ) gamekeydown[key_straferight]= true;
+		}
+
+	  fprintf(stderr,"- Tipping  [ %d,%d, %d %d degrees ]\n", mousex, mousey, touchscreen_magnitude, touchscreen_theta);
 	    }
 	  else touchscreen_theta = -1;
-	  
-	  fprintf(stderr,"- Tipping  [ %d,%d, %d %d degrees ]\n", mousex, mousey, touchscreen_magnitude,touchscreen_theta);
-	  
-	  if ( touchscreen_theta > 45 && touchscreen_theta < 135 ) gamekeydown[key_up]=true;
-	  if ( touchscreen_theta > 135 && touchscreen_theta < 225 ) gamekeydown[key_left]=true;
-	  if ( touchscreen_theta > 225 && touchscreen_theta < 315 ) gamekeydown[key_down]=true;
-	  if ( touchscreen_theta > 315 && touchscreen_theta < 360)  gamekeydown[key_right]=true;	  
-	  if ( touchscreen_theta > 0 && touchscreen_theta < 45)  gamekeydown[key_right]=true;
-	
-}
+	}
 
       // Have we already caught it? We only want to record the origin once.. 
       else if (mousex != 0 && mousey != 0 && !touchscreen_triptip && !touchscreen_skiptip && mousebuttons[0])
@@ -851,9 +865,6 @@ boolean G_Responder (event_t* ev)
 	  touchscreen_originy =mousey;
 	  touchscreen_triptip = true;      // We have caught a tipping event
 	}
-     
-      
-
 
       mousex = 0;
       mousey = 0;
