@@ -45,3 +45,4 @@ extern int usejoystick;
 
 void I_InitJoystick(void);
 void I_PollJoystick(void);
+void I_PollAccelerometer(void);

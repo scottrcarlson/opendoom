@@ -86,12 +86,15 @@ extern int     usemouse;        // config file var
 static boolean grabMouse;       // internal var
 static int mouse_currently_grabbed;
 
+
+
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
 
 //
 //  Translates the key currently in key
 //
+
 
 static int I_TranslateKey(SDL_keysym* key)
 {
@@ -221,26 +224,7 @@ static void I_GetEvent(SDL_Event *Event)
     event.data1 =  I_SDLtoDoomMouseState(Event->motion.state);
     event.data2 =  Event->motion.x;
     event.data3 = Event->motion.y;	
-
-    /*if ( Event->motion.xrel > 150 && Event->motion.xrel < 160 && Event->motion.yrel > 60)
-				 {
-				   fprintf(stderr,"Bottom Right");
-				 }
-    if (Event->motion.xrel < 0  && Event->motion.yrel == 119)
-				 {
-				   fprintf(stderr,"Bottom Left");
-				 }
-    if (Event->motion.xrel > 140 && Event->motion.xrel < 160 && Event->motion.yrel > -140 && Event->motion.yrel < -100)
-				 {
-				   fprintf(stderr,"Top Right");
-				 }
-    if (Event->motion.xrel < 25 && Event->motion.yrel > -140 && Event->motion.yrel < -100)
-				 {
-				   fprintf(stderr,"Top Left");
-				   }*/
     D_PostEvent(&event);
-
-
     break;
 
   /// OpenMoko Touchscreen End
@@ -277,6 +261,7 @@ void I_StartTic (void)
     I_GetEvent(&Event);
 
   I_PollJoystick();
+  I_PollAccelerometer();
 }
 
 //
