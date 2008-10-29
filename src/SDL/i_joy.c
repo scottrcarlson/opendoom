@@ -57,6 +57,77 @@ int usejoystick;
 static SDL_Joystick *joystick;
 #endif
 
+
+void I_PollAccelerometer(void)
+{
+  const unsigned int report_len = 16;
+  unsigned char report[report_len];
+  struct accel_3d_t accel;
+  accel.val[0] = 0.0;
+  accel.val[1] = 0.0;
+  accel.val[2] = 0.0;
+
+  int file_event;
+  file_event = open("/dev/input/event2", O_RDONLY);
+  while (rel!=0)
+    {
+      int read_len = read(file_event, report, report_len);
+      /* this was a blocking read */
+      if (read_len < 0)
+	{
+	  //                        perror("read");                                                                                              
+	  //                        continue;                                                                                                    
+	}
+
+      else {
+	rel = *(unsigned short int *)(report + 8);
+	/*                                                                                                                     
+	 * Neo sends three reports on X, Y, and Z with rel = 2                                                                 
+	 * and another one (as a separator) with rel = 0                                                                       
+	 */
+	if (rel == 2)
+	  {
+	    unsigned short int axis_ind = *(short int *)(report + 10);
+	    /* receives signed acceleration in milli-G */
+	    int val_mg = *(int *)(report + 12);
+	    /* convert acceleration to G */
+	    float val_g = (float)val_mg / 1000.0;
+
+	    /* save to accel on the axis */
+	    accel.val[axis_ind] = val_g;
+	  }
+	else if (rel == 0) /* separator report */
+	  {
+	    /* is touchscreen pressed? */
+	    //  int read_len = read(neo->screen_desc, report, report_len);                                                   
+	    /* this was a non-blocking read */
+	    //if (read_len < 0)                                                                                            
+	    //{                                                                                                            
+	    //      perror("read");                                                                                        
+	    //      continue;                                                                                              
+	    //}                                                                                                            
+	    //         pressed = (read_len > 0);                                                                                    
+	    /* call back is called */
+	    //         neo->handle_recv(pressed, accel);                                                                            
+	    //if (accel.val[0]>-0.10 && accel.val[1]<0.10)
+	    //  lastkey = sc_K; /* forward */
+	    //else if (accel.val[0]<-0.12 && accel.val[1]>0.12)
+	    //  lastkey = sc_J; /* backward */
+	    //else if (accel.val[0]>-0.12 && ((0.04+accel.val[0]*-1)<accel.val[1]))
+	    //  lastkey = sc_H; /* left */
+	    //else if (accel.val[1]<0.12 &&  (0.03+accel.val[1]<(accel.val[0]*-1)))
+	    //  lastkey = sc_L; /* right */
+	  }
+      }
+    }
+  close(file_event);
+  ev.type = ev_joystick;
+  ev.data1 = accel.val[0];
+  ev.data2 = accel.val[1];
+  ev.data3 = accel.val[2];
+  D_PostEvent(&ev);
+}
+
 static void I_EndJoystick(void)
 {
   lprintf(LO_DEBUG, "I_EndJoystick : closing joystick\n");
