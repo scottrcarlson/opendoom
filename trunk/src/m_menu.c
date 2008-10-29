@@ -4168,15 +4168,15 @@ boolean M_Responder (event_t* ev) {
       if (tempcounter >7) {
 	tempcounter =0;
       
-	if ( ev->data2 > 250 && ev->data3 < 80)
+	/*if ( ev->data2 > 250 && ev->data3 < 80)
 	  {
 	    ch = key_menu_escape;
 	    fprintf(stderr,"caught escape\n");
-	  }
+	    }*/
 
 	if (menuactive) 
 	  {
-	    if ( ev->data2 > 110 && ev->data2 <210 && ev->data3 > 70 && ev->data3 <170)
+	    if ( ev->data2 > 100 && ev->data2 <220 && ev->data3 > 40 && ev->data3 <120)
 	      {
 		ch =key_menu_enter;
 		fprintf(stderr,"caught menu_enter\n");
@@ -4429,15 +4429,11 @@ boolean M_Responder (event_t* ev) {
     //Openmoko -- This turns out to be the AUX Button
     
     if (ch == key_setup) {
-      M_StartControlPanel();
-      S_StartSound(NULL,sfx_swtchn);
-      M_SetupNextMenu(&SetupDef);
-      ch=key_menu_escape;
       
-      /////////////////////////////////////////
-      ///////// Openmoko Debugging
-      //ch = key_quit;
-      ////////////////////////////////////////
+      
+      M_StartControlPanel();
+      S_StartSound(NULL,sfx_swtchn);  
+      ch=key_menu_escape;
       
       return true;
     }
