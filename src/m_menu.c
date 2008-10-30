@@ -4176,13 +4176,13 @@ boolean M_Responder (event_t* ev) {
 
 	if (menuactive) 
 	  {
-	    if ( ev->data2 > 100 && ev->data2 <220 && ev->data3 > 40 && ev->data3 <120)
+	    if ( ev->data2 > 60 && ev->data2 <260 && ev->data3 > 40 && ev->data3 <160)
 	      {
 		ch =key_menu_enter;
 		fprintf(stderr,"caught menu_enter\n");
 	      }
 	    
-	    if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 > 170 )
+	    if ( ev->data2 > 105 && ev->data2 <205 && ev->data3 > 170 )
 	      {
 		ch = key_menu_down;
 		fprintf(stderr,"caught menu_down\n");
