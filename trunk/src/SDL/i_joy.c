@@ -46,6 +46,13 @@
 #include "i_joy.h"
 #include "lprintf.h"
 
+#include <fcntl.h>
+#include <stdio.h>
+#include <sys/select.h>
+#include <unistd.h>
+#include <signal.h>
+#include "accelneo.h"
+
 int joyleft;
 int joyright;
 int joyup;
@@ -53,13 +60,27 @@ int joydown;
 
 int usejoystick;
 
+int file_event;
+
 #ifdef HAVE_SDL_JOYSTICKGETAXIS
 static SDL_Joystick *joystick;
 #endif
 
 
+
+void I_InitAccelerometer(void)
+{
+  file_event = open("/dev/input/event3", O_RDONLY);
+}
+
+void I_CloseAccelerometer(void)
+{
+  close(file_event);
+}
+
 void I_PollAccelerometer(void)
 {
+  event_t ev;
   const unsigned int report_len = 16;
   unsigned char report[report_len];
   struct accel_3d_t accel;
@@ -67,8 +88,9 @@ void I_PollAccelerometer(void)
   accel.val[1] = 0.0;
   accel.val[2] = 0.0;
 
-  int file_event;
-  file_event = open("/dev/input/event2", O_RDONLY);
+
+  unsigned short int rel = 1;
+
   while (rel!=0)
     {
       int read_len = read(file_event, report, report_len);
@@ -90,42 +112,24 @@ void I_PollAccelerometer(void)
 	    unsigned short int axis_ind = *(short int *)(report + 10);
 	    /* receives signed acceleration in milli-G */
 	    int val_mg = *(int *)(report + 12);
+	    accel.val[axis_ind] = val_mg;
+	    //fprintf(stderr,"Poll %d \n",val_mg); 
 	    /* convert acceleration to G */
-	    float val_g = (float)val_mg / 1000.0;
+	    //float val_g = (float)val_mg / 1000.0;
 
 	    /* save to accel on the axis */
-	    accel.val[axis_ind] = val_g;
+
 	  }
-	else if (rel == 0) /* separator report */
-	  {
-	    /* is touchscreen pressed? */
-	    //  int read_len = read(neo->screen_desc, report, report_len);                                                   
-	    /* this was a non-blocking read */
-	    //if (read_len < 0)                                                                                            
-	    //{                                                                                                            
-	    //      perror("read");                                                                                        
-	    //      continue;                                                                                              
-	    //}                                                                                                            
-	    //         pressed = (read_len > 0);                                                                                    
-	    /* call back is called */
-	    //         neo->handle_recv(pressed, accel);                                                                            
-	    //if (accel.val[0]>-0.10 && accel.val[1]<0.10)
-	    //  lastkey = sc_K; /* forward */
-	    //else if (accel.val[0]<-0.12 && accel.val[1]>0.12)
-	    //  lastkey = sc_J; /* backward */
-	    //else if (accel.val[0]>-0.12 && ((0.04+accel.val[0]*-1)<accel.val[1]))
-	    //  lastkey = sc_H; /* left */
-	    //else if (accel.val[1]<0.12 &&  (0.03+accel.val[1]<(accel.val[0]*-1)))
-	    //  lastkey = sc_L; /* right */
-	  }
+
       }
     }
-  close(file_event);
-  ev.type = ev_joystick;
+
+  ev.type = ev_accelerometer;
   ev.data1 = accel.val[0];
   ev.data2 = accel.val[1];
   ev.data3 = accel.val[2];
-  D_PostEvent(&ev);
+  //if (accel.val[1] > 0) D_PostEvent(&ev);
+D_PostEvent(&ev);
 }
 
 static void I_EndJoystick(void)

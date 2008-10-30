@@ -438,7 +438,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
                !player->powers[pw_strength] ||
                P_WeaponPreferred(wp_chainsaw, wp_fist)))
             newweapon = wp_chainsaw;
-
           // Select SSG from '3' only if it's owned and the player
           // does not have a shotgun, or if the shotgun is already
           // in use, or if the SSG is not already in use and the
@@ -790,7 +789,7 @@ boolean G_Responder (event_t* ev)
       gamekeydown[key_fire] = 0;
       gamekeydown[key_use] = 0;
       gamekeydown[key_weapontoggle]=0;
-      gamekeydown[key_autorun]=true;
+      //      gamekeydown[key_autorun]=true;
       
  
       if (mousex < 80 && mousey >185)
@@ -866,85 +865,29 @@ boolean G_Responder (event_t* ev)
 	  touchscreen_triptip = true;      // We have caught a tipping event
 	}
 
-      mousex = 0;
+      mousex = 0; // these can go away soon, once I've seperated the touch screen and restored the original mouse code  -src
       mousey = 0;
       
-      /*if (mousex > 160 && mousex < 200 && mousey >80 && mousey <120)
-	{
-	  gamekeydown[key_up]=true;
-	  gamekeydown[key_left]=true;
-
-	}
-      if (mousex > 200 && mousex < 280 && mousey >80 && mousey <160)
-	{
-	  gamekeydown[key_up]=true;
-	}
-      if (mousex > 280 &&  mousey >80 &&  mousey <120)
-	{
-	  gamekeydown[key_up]=true;
-	  gamekeydown[key_right]=true;
-	}
-      if (mousex > 160 && mousex < 200 && mousey >120 && mousey <200)
-	{
-	  gamekeydown[key_left]=true;
-	}
-      if (mousex > 280 && mousey >120 && mousey <200)
-	{
-	  gamekeydown[key_right]=true;
-	}
-      if (mousex > 160 && mousex < 200 && mousey >200)
-	{
-	  gamekeydown[key_down]=true;
-	  gamekeydown[key_left]=true;
-	}
-      if (mousex > 200 && mousex < 280 && mousey >160)
-	{
-	  gamekeydown[key_down]=true;
-	}
-      if (mousex > 280 && mousey >200)
-	{
-	  gamekeydown[key_down]=true;
-	  gamekeydown[key_right]=true;
-	  }*/
-	  /*if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 > 74 && ev->data3 <165)
-	    {
-	      gamekeydown[key_fire] = true;
-	      fprintf(stderr,"caught key fire\n");
-	    }
-	  if ( ev->data2 < 70 && ev->data3 < 50)
-	    {
-	      ch = key_use;
-	      fprintf(stderr,"caught key use\n");
-	    }
-
-	  if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 > 170 )
-	    {
-	      gamekeydown[key_down] = true;
-	      fprintf(stderr,"caught key down\n");
-	    }
-	  if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 < 70 )
-	    {
-	      gamekeydown[key_up] = true;
-	      fprintf(stderr,"caught key up\n");
-	    }
-	  if ( ev->data2 < 70 && ev->data3 < 165  && ev->data3 > 75 )
-	    {
-	      gamekeydown[key_left] = true;	  
-	      fprintf(stderr,"caught key left\n");
-	    }
-	  
-	  if ( ev->data2 >270 && ev->data3 < 165  && ev->data3 > 75 )
-	    {
-	      gamekeydown[key_right] = true;	  
-	      fprintf(stderr,"caught key right\n");
-	      }*/
-
-	       
-	
-
-       mousebuttons[0] = false; //Not sure why i have this here. Hacky Jacky	
+      mousebuttons[0] = false; //Not sure why i have this here. Hacky Jacky	
       
       return true;    // eat events
+
+    case ev_accelerometer:
+      fprintf(stderr,"Acceleration [mg] : %d, %d, %d \n",ev->data1, ev->data2, ev->data3);
+      gamekeydown[key_up] = 0;
+      gamekeydown[key_down] = 0;      
+      gamekeydown[key_left] = 0;
+      gamekeydown[key_right] = 0;      
+
+      if (ev->data3 >  700) mousey = 1 * ( ev->data3 - 700 ); //gamekeydown[key_up] = 1;
+      if (ev->data3 <  660) mousey =  1 * ( ev->data3 - 660 ); // Down
+      if (ev->data2 <  10) mousex = abs(10 * ( ev->data2 - 10 )); // Right							  
+      if (ev->data2 >  70) mousex = -abs(10 * ( ev->data2 - 70 )); //Left
+      
+      //if (ev->data2 <  590) gamekeydown[key_right] = 1;
+      //if (ev->data2 >  740) gamekeydown[key_left] = 1;
+
+     return true;    // eat events
 
     case ev_joystick:
       joybuttons[0] = ev->data1 & 1;

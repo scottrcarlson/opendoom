@@ -62,6 +62,7 @@
 #include "st_stuff.h"
 #include "lprintf.h"
 
+int polltic; //Openmoko polling reduction
 
 
 int gl_colorbuffer_bits=16;
@@ -248,6 +249,7 @@ static void I_GetEvent(SDL_Event *Event)
 void I_StartTic (void)
 {
   SDL_Event Event;
+
   {
     int should_be_grabbed = grabMouse &&
       !(paused || (gamestate != GS_LEVEL) || demoplayback);
@@ -260,8 +262,15 @@ void I_StartTic (void)
   while ( SDL_PollEvent(&Event) )
     I_GetEvent(&Event);
 
-  I_PollJoystick();
-  I_PollAccelerometer();
+  polltic += 1;
+  if (polltic > 1) 
+    {
+      I_PollAccelerometer(); //Openmoko 
+      polltic = 0;
+    }
+
+  //I_PollJoystick(); 
+
 }
 
 //
@@ -285,7 +294,7 @@ static void I_InitInputs(void)
     SDL_WarpMouse((unsigned short)(SCREENWIDTH/2), (unsigned short)(SCREENHEIGHT/2));
   
   I_InitJoystick();
-  
+  I_InitAccelerometer();
   ////////////////////////////////////////////////////////////
   // OpenMoko
   ////////////
@@ -467,6 +476,9 @@ void I_SetPalette (int pal)
 
 static void I_ShutdownSDL(void)
 {
+
+  I_CloseAccelerometer(); //openmoko temp need to find better place for this.
+
   SDL_Quit();
   return;
 }
