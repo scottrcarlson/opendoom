@@ -326,5 +326,12 @@ extern int monkeys, default_monkeys;
 
 extern int HelperThing;          // type of thing to use for helper
 
+extern int accelerometer_tare;   // Take current xyz accelerations and make them the new "home" position
+
+extern int accelerometer_xwindow; // DeadZone in Pixels
+extern int accelerometer_ywindow; // DeadZone in Pixels
+extern int accelerometer_zwindow; // DeadZone in Pixels
+extern int accelerometer_touchscreen_toggle;  // 0 - Accelerometer/touchscreen combo  1 - Full Touchscreen Only
+
 
 #endif

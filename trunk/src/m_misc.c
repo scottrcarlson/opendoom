@@ -176,6 +176,8 @@ extern int endoom_mode;
 
 extern const char* S_music_files[]; // cournia
 
+int accelerometer0_touchscreen1_toggle;
+
 /* cph - Some MBF stuff parked here for now
  * killough 10/98
  */
@@ -532,6 +534,14 @@ default_t defaults[] =
   {"key_weapon9",     {&key_weapon9},         {'9'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to switch to weapon 9 (supershotgun)    // phares
 
+  // SCarlson 10/30/08
+  {"Accelerometer Settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"accelerometer_xwindow", {&accelerometer_xwindow},{40},0,100,def_int,ss_none},  // Deadzone (in pixels) defines the length away 
+  {"accelerometer_ywindow", {&accelerometer_ywindow},{40},0,100,def_int,ss_none},  // from "home" position required for response 
+  {"accelerometer_zwindow", {&accelerometer_ywindow},{40},0,100,def_int,ss_none},  // from "home" position required for response 
+  {"Touchcreen Settings",{NULL},{0},UL,UL,def_none,ss_none},
+  {"accelerometer0_touchscreen1_toggle", {&accelerometer0_touchscreen1_toggle},{0},0,1,def_int,ss_none}, // 0 Acc/Touchscreen  1 Full  Touchscreen
+     
   // killough 2/22/98: screenshot key
   {"key_screenshot",  {&key_screenshot},      {'*'}            ,
    0,MAX_KEY,def_key,ss_keys}, // key to take a screenshot
@@ -846,43 +856,43 @@ static const char* defaultfile; // CPhipps - static, const
 //
 
 void M_SaveDefaults (void)
-  {
+{
   int   i;
   FILE* f;
-
+  
   f = fopen (defaultfile, "w");
   if (!f)
     return; // can't write the file, but don't complain
-
+  
   // 3/3/98 explain format of file
-
+  
   fprintf(f,"# Doom config file\n");
   fprintf(f,"# Format:\n");
   fprintf(f,"# variable   value\n");
-
+  
   for (i = 0 ; i < numdefaults ; i++) {
     if (defaults[i].type == def_none) {
       // CPhipps - pure headers
       fprintf(f, "\n# %s\n", defaults[i].name);
     } else
-    // CPhipps - modified for new default_t form
-    if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
-      {
-      // CPhipps - remove keycode hack
-      // killough 3/6/98: use spaces instead of tabs for uniform justification
-      if (defaults[i].type == def_hex)
-  fprintf (f,"%-25s 0x%x\n",defaults[i].name,*(defaults[i].location.pi));
+      // CPhipps - modified for new default_t form
+      if (!IS_STRING(defaults[i])) //jff 4/10/98 kill super-hack on pointer value
+	{
+	  // CPhipps - remove keycode hack
+	  // killough 3/6/98: use spaces instead of tabs for uniform justification
+	  if (defaults[i].type == def_hex)
+	    fprintf (f,"%-25s 0x%x\n",defaults[i].name,*(defaults[i].location.pi));
+	  else
+	    fprintf (f,"%-25s %5i\n",defaults[i].name,*(defaults[i].location.pi));
+	}
       else
-  fprintf (f,"%-25s %5i\n",defaults[i].name,*(defaults[i].location.pi));
-      }
-    else
-      {
-      fprintf (f,"%-25s \"%s\"\n",defaults[i].name,*(defaults[i].location.ppsz));
-      }
-    }
-
-  fclose (f);
+	{
+	  fprintf (f,"%-25s \"%s\"\n",defaults[i].name,*(defaults[i].location.ppsz));
+	}
   }
+  
+  fclose (f);
+}
 
 /*
  * M_LookupDefault

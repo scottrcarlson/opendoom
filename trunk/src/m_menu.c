@@ -62,14 +62,6 @@
 #include "r_demo.h"
 #include "r_fps.h"
 
-///////////////////
-//OpenMoko Touchscreen/Accelerometer support
-
-#include "accelneo.h"
-
-//End OpenMoko
-///////////////////
-
 
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern boolean  message_dontfuckwithme;
@@ -1088,9 +1080,11 @@ void M_QuitDOOM(int choice)
 
 
 ////////////////////
-//OpenMoko Debugging//////  
+//OpenMoko Quit Straight Up//////  
 //M_StartMessage(endstring,M_QuitResponse,true);
-M_QuitResponse('y');
+
+  M_QuitResponse('y');  // We just want to exit, since we have minimal resources for a "y" key.
+
 ////END openmoko
 /////////////////
 
@@ -4099,6 +4093,7 @@ boolean M_Responder (event_t* ev) {
   static int mousex    = 0;
   static int lastx     = 0;
   static int  tempcounter =0;
+  static int quitgamenow = 0;
   ch = -1; // will be changed to a legit char if we're going to use it here
 
 
@@ -4154,24 +4149,22 @@ boolean M_Responder (event_t* ev) {
       }
     }
     
-  } else {
-
-////////////////////////////////
-// Process Openmoko Touchscreen
-
-   
-    if (ev->type == ev_mouse) { 
+    } else {
+      
+      if (ev->type == ev_mouse) { 
      
-      //fprintf(stderr,"tc -- %d\n",tempcounter)
-      tempcounter += 1;
-      //fprintf(stderr,"Menuactive %d",menuactive);
-      if (tempcounter >7) {
-	tempcounter =0;
+	//fprintf(stderr,"tc -- %d\n",tempcounter)
+	tempcounter += 1;
+	//fprintf(stderr,"Menuactive %d",menuactive);
+	if (tempcounter >7) {
+	  tempcounter =0;
       
 	if ( ev->data2 > 250 && ev->data3 < 80)
 	  {
 	    ch = key_menu_escape;
 	    fprintf(stderr,"caught escape\n");
+	    
+	    if (menuactive) accelerometer_tare = 1;
 	  }
 
 	if (menuactive) 
@@ -4206,6 +4199,31 @@ boolean M_Responder (event_t* ev) {
 	  }
       }
     }
+
+////////////////////////////////
+// Process Accelerometer
+      
+      /////////////////////
+      ///////// Accelerometer Processing
+      if (ev->type == ev_accelerometer)
+	{
+	  // Need to think this out here. I just added auto-tare. Gonna cause problems.. Maybe we can reject anything near the faceup and facedown direction. (Doesn't seem like a comfortable position to play anyway)
+	  if (!menuactive)                                     // Do these things only if we are NOT in a menu!
+	    {
+	      if (ev->data1 >30 && ev->data1 < 70)              // Pause (going to mainmenu) the game when set flat face up.
+		if (ev->data2 > 30 && ev->data2 < 70)
+		  ch= key_menu_escape;
+	      if (quitgamenow) ch = key_quit;
+
+	      if (ev->data3 < -1000)                            // Quicksave and Quit when set flat face down. (Need to name files automatically, probably makes sense to just time/date stamp them??
+		{
+		  ch = key_quicksave;
+		  quitgamenow = 1;
+		}
+	    }
+	}
+
+   
 
 // End OpenMoko Touchscreen
 ////////////////////////////////////
@@ -5027,7 +5045,10 @@ boolean M_Responder (event_t* ev) {
       if ((ch == key_menu_escape) || (ch == key_menu_backspace))
   {
     if (ch == key_menu_escape) // Clear all menus
-      M_ClearMenus();
+      {
+	M_ClearMenus();
+      }
+      
     else // key_menu_backspace = return to Setup Menu
       if (currentMenu->prevMenu)
         {

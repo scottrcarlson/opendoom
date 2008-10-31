@@ -104,6 +104,12 @@ int doom_weapon_toggles; // killough 10/98
 
 int monkeys, default_monkeys;
 
+int accelerometer_tare = 1;  // Lets force this to happen at the beginning of the first game. User needs to know this is happening somehow, probably just put this in the docs, and mention in the video.
+
+int accelerometer_xwindow=40; // DeadZone in Pixels                                                                       
+int accelerometer_ywindow=40; // DeadZone in Pixels                                                                       
+int accelerometer_zwindow=40; // DeadZone in Pixels                                                                     
+int accelerometer0_touchscreen1_toggle=0;  // 0 - Accelerometer/touchscreen combo  1 - Full Touchscreen Only    
 //SCarlson openmoko touchscreen
 //int touchscreen_originx=-1, touchscreen_originy=-1;
 //boolean touchscreen_triptip=false;

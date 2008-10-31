@@ -88,7 +88,9 @@ static boolean grabMouse;       // internal var
 static int mouse_currently_grabbed;
 
 
-
+///////////////////
+// Accelerometer
+int accelerometer0_touchscreen1_toggle;
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
 
@@ -262,13 +264,16 @@ void I_StartTic (void)
   while ( SDL_PollEvent(&Event) )
     I_GetEvent(&Event);
 
-  polltic += 1;
-  if (polltic > 1) 
+  if (!accelerometer0_touchscreen1_toggle)
     {
-      I_PollAccelerometer(); //Openmoko 
-      polltic = 0;
+      polltic += 1;
+      if (polltic > 2) 
+	{
+	  I_PollAccelerometer(); //Openmoko 
+	  polltic = 0;
+	}
     }
-
+  
   //I_PollJoystick(); 
 
 }
@@ -294,7 +299,7 @@ static void I_InitInputs(void)
     SDL_WarpMouse((unsigned short)(SCREENWIDTH/2), (unsigned short)(SCREENHEIGHT/2));
   
   I_InitJoystick();
-  I_InitAccelerometer();
+  if (!accelerometer0_touchscreen1_toggle)  I_InitAccelerometer();
   ////////////////////////////////////////////////////////////
   // OpenMoko
   ////////////
