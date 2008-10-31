@@ -112,6 +112,13 @@ boolean         paused;
 boolean touchscreen_triptip= false;
 int touchscreen_originx= 0;
 int touchscreen_originy=0;
+int accelerometer_xHome = 0;         // Stores new "Home" position 
+int accelerometer_yHome = 0;         // Stores new "Home" position
+int accelerometer_zHome = 0;         // Stores new "Home" position
+int accelerometer_xwindow;        // DeadZone in Pixels
+int accelerometer_ywindow;        // DeadZone in Pixels
+int accelerometer_zwindow;        // DeadZone in Pixels
+int accelerometer0_touchscreen1_toggle;  // 0 - Accelerometer/touchscreen combo  1 - Full Touchscreen Only
 
 // CPhipps - moved *_loadgame vars here
 static boolean forced_loadgame = false;
@@ -664,16 +671,20 @@ boolean G_Responder (event_t* ev)
   // openmoko
   // touch screen variables
   // SCarlson - Finger-Tipping
-  int touchscreen_height=80;
-  int touchscreen_width=80;
- 
-  boolean touchscreen_skiptip = false;  // Are we skipping the tipping?
- 
+  int touchscreen_height= 80;
+  int touchscreen_width= 80;
   int touchscreen_deltax = 0;        
   int touchscreen_deltay = 0; 
   int touchscreen_magnitude = 0;     // (let's not use floats?) resultant tipping vector
   int touchscreen_theta = 0;
+ boolean touchscreen_skiptip = false;  // Are we skipping the tipping?
+
+
+ //  int accelerometer_xWindow = 40;      // This defines the deadzone around the "Home" position
+ // int accelerometer_yWindow = 40;      // This defines the deadzone around the "Home" position
+ // int accelerometer_zWindow = 40;      // not using this yet.
  
+
   //////////
 
   // allow spy mode changes even during the demo
@@ -830,19 +841,24 @@ boolean G_Responder (event_t* ev)
 	    {  
 	      touchscreen_theta =atan2(touchscreen_deltay,touchscreen_deltax) * -57.29577951; // theta * 180/pi
 	      if ( touchscreen_theta < 0 ) touchscreen_theta += 360;// converting -deg values to continuous 0-359deg
-	      
+
+	      // This is a bad way of doing this, I need to drive the mouse here, not the keyboard.	      
 	      if ( touchscreen_theta > 60 && touchscreen_theta < 120 ) gamekeydown[key_up]=true;
 	      if ( touchscreen_theta > 240 && touchscreen_theta < 300 ) gamekeydown[key_down]=true;
-	      if ( touchscreen_magnitude > 10  && touchscreen_magnitude <= 50) 
+	      if ( touchscreen_magnitude > 10  && touchscreen_magnitude <= 50 && accelerometer0_touchscreen1_toggle ) 
 		{
 		  if ( touchscreen_theta > 160 && touchscreen_theta <= 210 ) gamekeydown[key_left]=true;
 		  if ( touchscreen_theta > 330 && touchscreen_theta <= 360)  gamekeydown[key_right]=true;	  
 		  if ( touchscreen_theta > 0 && touchscreen_theta <= 30)  gamekeydown[key_right]=true;
 		  
-		  if ( touchscreen_theta > 120 && touchscreen_theta <= 160 ) { gamekeydown[key_up]=true; gamekeydown[key_left]=true; }
-		  if ( touchscreen_theta > 30 && touchscreen_theta <= 60) { gamekeydown[key_up]=true; gamekeydown[key_right]=true; }
-		  if ( touchscreen_theta > 210 && touchscreen_theta <= 240)  { gamekeydown[key_down]=true; gamekeydown[key_left]=true; }
-		  if ( touchscreen_theta > 300 && touchscreen_theta <= 330)  { gamekeydown[key_down]=true;gamekeydown[key_right]=true; }
+		  if ( touchscreen_theta > 120 && touchscreen_theta <= 160 ) 
+		    { gamekeydown[key_up]=true; gamekeydown[key_left]=true; }
+		  if ( touchscreen_theta > 30 && touchscreen_theta <= 60) 
+		    { gamekeydown[key_up]=true; gamekeydown[key_right]=true; }
+		  if ( touchscreen_theta > 210 && touchscreen_theta <= 240)  
+		    { gamekeydown[key_down]=true; gamekeydown[key_left]=true; }
+		  if ( touchscreen_theta > 300 && touchscreen_theta <= 330)  
+		    { gamekeydown[key_down]=true;gamekeydown[key_right]=true; }
 		}
 	      else if( touchscreen_magnitude > 50)     
 		{
@@ -873,21 +889,44 @@ boolean G_Responder (event_t* ev)
       return true;    // eat events
 
     case ev_accelerometer:
-      fprintf(stderr,"Acceleration [mg] : %d, %d, %d \n",ev->data1, ev->data2, ev->data3);
-      gamekeydown[key_up] = 0;
-      gamekeydown[key_down] = 0;      
-      gamekeydown[key_left] = 0;
-      gamekeydown[key_right] = 0;      
-
-      if (ev->data3 >  700) mousey = 1 * ( ev->data3 - 700 ); //gamekeydown[key_up] = 1;
-      if (ev->data3 <  660) mousey =  1 * ( ev->data3 - 660 ); // Down
-      if (ev->data2 <  10) mousex = abs(10 * ( ev->data2 - 10 )); // Right							  
-      if (ev->data2 >  70) mousex = -abs(10 * ( ev->data2 - 70 )); //Left
       
-      //if (ev->data2 <  590) gamekeydown[key_right] = 1;
-      //if (ev->data2 >  740) gamekeydown[key_left] = 1;
+      if (!accelerometer0_touchscreen1_toggle)
+	{
+	  if (accelerometer_tare)    // Make current position the "Home" position
+	    {
+	      accelerometer_xHome = ev->data1;
+	      accelerometer_yHome = ev->data2;
+	      accelerometer_zHome = ev->data3;
+	      // fprintf(stderr,"Tare :[ %d, %d, %d ]", accelerometer_xHome, accelerometer_yHome, accelerometer_zHome);
+	      
+	      // Currently this operation is triggered when the user leaves 
+	      //the main menu and enters the back to the game, and also at the beginning of the first game played.
+	      accelerometer_tare = false;   	      
+	    }
+	  fprintf(stderr,"Acceleration [mg] : %d, %d, %d \n",ev->data1, ev->data2, ev->data3);
 
-     return true;    // eat events
+	  gamekeydown[key_up] = 0;
+	  gamekeydown[key_down] = 0;
+	  gamekeydown[key_left] = 0;
+	  gamekeydown[key_right] = 0;      
+	  
+	  if (ev->data3 >  (accelerometer_zHome + accelerometer_zwindow)) mousey = abs(1 * ( ev->data3 - (accelerometer_zHome + accelerometer_zwindow) ));   // Forward
+	  if (ev->data3 <  (accelerometer_zHome - accelerometer_zwindow)) mousey = -abs(1 * ( ev->data3 - (accelerometer_zHome - accelerometer_zwindow) ));  // Backward
+	  if (ev->data2 >  (accelerometer_yHome + accelerometer_ywindow)) mousex = -abs(10 * ( ev->data2 - (accelerometer_yHome + accelerometer_ywindow) )); // Right					       
+	  if (ev->data2 <  (accelerometer_yHome - accelerometer_ywindow)) mousex = abs(10 * ( ev->data2 - (accelerometer_yHome - accelerometer_ywindow) ));  //Left
+	  	  
+	  ////////////////////////////
+	  // Lets not spin out of control when extremely out of wack.
+	  // Need to define Saturation
+	  // Would like to put something here to ignore acc sensor when it is extremely far from "home".
+	  /////////////////////////////
+	  
+	  return true;    // eat events
+	}
+      
+    
+
+
 
     case ev_joystick:
       joybuttons[0] = ev->data1 & 1;
@@ -897,7 +936,7 @@ boolean G_Responder (event_t* ev)
       joyxmove = ev->data2;
       joyymove = ev->data3;
       return true;    // eat events
-
+      
     default:
       break;
     }
