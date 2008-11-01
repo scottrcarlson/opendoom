@@ -1,5 +1,4 @@
 #labels opendoom,wiki
+=Official Wiki=
 
-Official Wiki
-
-http://unsyncopated.com/BrainSolvent/Doom%20Port
+   http://unsyncopated.com/BrainSolvent/Doom%20Port
