@@ -161,7 +161,7 @@ static int I_TranslateKey(SDL_keysym* key)
   default:    rc = key->sym;    break;
   }
 
-  fprintf(stderr,"%d rc",rc); // openmoko
+  //fprintf(stderr,"%d rc",rc); // openmoko
   return rc;
 
 }
@@ -194,6 +194,7 @@ static void I_GetEvent(SDL_Event *Event)
   case SDL_KEYDOWN:
     event.type = ev_keydown;
     event.data1 = I_TranslateKey(&Event->key.keysym);
+    //fprintf(stderr,"Caught key %c\n",event.data1);
     D_PostEvent(&event);
     break;
 
@@ -227,6 +228,7 @@ static void I_GetEvent(SDL_Event *Event)
     event.data1 =  I_SDLtoDoomMouseState(Event->motion.state);
     event.data2 =  Event->motion.x;
     event.data3 = Event->motion.y;	
+    //fprintf(stderr,"Debug X%d Y%d \n",event.data2,event.data3);
     D_PostEvent(&event);
     break;
 
@@ -266,12 +268,9 @@ void I_StartTic (void)
 
   if (!accelerometer0_touchscreen1_toggle)
     {
-      polltic += 1;
-      if (polltic > 2) 
-	{
-	  I_PollAccelerometer(); //Openmoko 
-	  polltic = 0;
-	}
+      // I tried to slow the polling down trivially here and it made the reponse to slow for smooth game play
+      I_PollAccelerometer(); //Openmoko 
+
     }
   
   //I_PollJoystick(); 

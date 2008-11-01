@@ -144,6 +144,14 @@ boolean menuactive;    // The menus are up
 
 char savegamestrings[10][SAVESTRINGSIZE];
 
+////////////////
+/// Openmoko Port
+int accelerometer_strafe;
+
+////
+//////////////
+
+
 //
 // MENU TYPEDEFS
 //
@@ -4156,42 +4164,44 @@ boolean M_Responder (event_t* ev) {
 	//fprintf(stderr,"tc -- %d\n",tempcounter)
 	tempcounter += 1;
 	//fprintf(stderr,"Menuactive %d",menuactive);
-	if (tempcounter >7) {
+	if (tempcounter >10) {
 	  tempcounter =0;
       
 	if ( ev->data2 > 250 && ev->data3 < 80)
 	  {
+
+	    fprintf(stderr,"caught escape\n");	    
+	    if (menuactive) accelerometer_tare = 1;  // The current position of the phone become "Home"
+
 	    ch = key_menu_escape;
-	    fprintf(stderr,"caught escape\n");
-	    
-	    if (menuactive) accelerometer_tare = 1;
+		
 	  }
 
 	if (menuactive) 
 	  {
-	    if ( ev->data2 > 60 && ev->data2 <260 && ev->data3 > 40 && ev->data3 <160)
+	    if ( ev->data2 > 60 && ev->data2 <260 && ev->data3 > 40 && ev->data3 < 200)
 	      {
 		ch =key_menu_enter;
 		fprintf(stderr,"caught menu_enter\n");
 	      }
 	    
-	    if ( ev->data2 > 105 && ev->data2 <205 && ev->data3 > 170 )
+	    if ( ev->data2 > 80 && ev->data2 <240 && ev->data3 > 170 )
 	      {
 		ch = key_menu_down;
 		fprintf(stderr,"caught menu_down\n");
 	      }
-	    if ( ev->data2 > 115 && ev->data2 <205 && ev->data3 < 70 )
+	    if ( ev->data2 > 80 && ev->data2 <240 && ev->data3 < 70 )
 	      {
 		ch = key_menu_up;
 		fprintf(stderr,"caught menu_up\n");
 	      }
-	    if ( ev->data2 < 70 && ev->data3 < 165  && ev->data3 > 75 )
+	    if ( ev->data2 < 70 && ev->data3 < 175 && ev->data3 > 65 )
 	      {
 		ch = key_menu_left;
 		fprintf(stderr,"caught menu_left\n");
 	      }       
 	    
-	    if ( ev->data2 >270 && ev->data3 < 165  && ev->data3 > 75 )
+	    if ( ev->data2 >250 && ev->data3 < 175 && ev->data3 > 65 )
 	      {
 		ch = key_menu_right;
 		fprintf(stderr,"caught menu_right\n");
@@ -4210,36 +4220,42 @@ boolean M_Responder (event_t* ev) {
 	  // Need to think this out here. I just added auto-tare. Gonna cause problems.. Maybe we can reject anything near the faceup and facedown direction. (Doesn't seem like a comfortable position to play anyway)
 	  if (!menuactive)                                     // Do these things only if we are NOT in a menu!
 	    {
-	      if (ev->data1 >30 && ev->data1 < 70)              // Pause (going to mainmenu) the game when set flat face up.
-		if (ev->data2 > 30 && ev->data2 < 70)
+	      if (ev->data1 >10 && ev->data1 < 100)              // Pause (going to mainmenu) the game when set flat face up.
+		if (ev->data2 > 10 && ev->data2 < 100)
 		  ch= key_menu_escape;
 	      if (quitgamenow) ch = key_quit;
 
 	      if (ev->data3 < -1000)                            // Quicksave and Quit when set flat face down. (Need to name files automatically, probably makes sense to just time/date stamp them??
 		{
-		  ch = key_quicksave;
-		  quitgamenow = 1;
+		  //Not sure if this function will be useful yet, the user may want to play the game while the unit is upside down
+//		  ch = key_quicksave;
+		  //quitgamenow = 1;
 		}
 	    }
 	}
 
-   
 
-// End OpenMoko Touchscreen
-////////////////////////////////////
 
-        // Process keyboard input
-
+      /////////////////      
+      // KEYBOARD
+      //////////////////
     if (ev->type == ev_keydown)
       {
-	ch = ev->data1;               // phares 4/11/98:
-	if (ch == KEYD_RSHIFT)        // For chat string processing, need
-	  shiftdown = true;           // to know when shift key is up or
+	ch = ev->data1;             // phares 4/11/98:
+	if (ch == KEYD_RSHIFT)      // For chat string processing, need
+	  shiftdown = true;         // to know when shift key is up or
+	else if (ch == key_setup)   // When Accelerometer is turned on, we use the AUX button on the OpenMoko Freerunner to strafe.  
+	 accelerometer_strafe = 1; 
+	
       }                             // down so you can get at the !,#,
     else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
+      {
       if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
 	shiftdown = false;          // so we need to note the difference
-  }                                 // here using the 'shiftdown' boolean.
+	else if (ev->data1 == key_setup)   // When Accelerometer is turned on, we use the AUX button on the OpenMoko Freerunner to strafe.  
+	  accelerometer_strafe = 0;       
+      }                             // here using the 'shiftdown' boolean.
+    }
   
   if (ch == -1)
     return false; // we can't use the event here
@@ -4448,11 +4464,7 @@ boolean M_Responder (event_t* ev) {
     
     if (ch == key_setup) {
       
-      
-      //M_StartControlPanel();
-      //S_StartSound(NULL,sfx_swtchn);  
-      ch=key_menu_escape;
-      
+
       return true;
     }
   }
