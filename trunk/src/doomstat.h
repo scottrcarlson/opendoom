@@ -327,11 +327,14 @@ extern int monkeys, default_monkeys;
 extern int HelperThing;          // type of thing to use for helper
 
 extern int accelerometer_tare;   // Take current xyz accelerations and make them the new "home" position
-
+extern int accelerometer_strafe; // Tells Accelerometer routine to handle a strafe or a turn.
 extern int accelerometer_xwindow; // DeadZone in Pixels
 extern int accelerometer_ywindow; // DeadZone in Pixels
 extern int accelerometer_zwindow; // DeadZone in Pixels
-extern int accelerometer_touchscreen_toggle;  // 0 - Accelerometer/touchscreen combo  1 - Full Touchscreen Only
+extern int accelerometer_xscale; // Scaling Factor for Motion (acceleration)
+extern int accelerometer_yscale; // Scaling Factor for Motion (acceleration)
+extern int accelerometer_zscale; // Scaling Factor for Motion (acceleration)
+extern int accelerometer0_touchscreen1_toggle;  // 0 - Accelerometer/touchscreen combo  1 - Full Touchscreen Only
 
 
 #endif

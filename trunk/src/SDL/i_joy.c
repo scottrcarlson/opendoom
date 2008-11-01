@@ -87,20 +87,17 @@ void I_PollAccelerometer(void)
   accel.val[0] = 0.0;
   accel.val[1] = 0.0;
   accel.val[2] = 0.0;
-
-
+  
   unsigned short int rel = 1;
-
+  
   while (rel!=0)
     {
       int read_len = read(file_event, report, report_len);
       /* this was a blocking read */
       if (read_len < 0)
-	{
-	  //                        perror("read");                                                                                              
-	  //                        continue;                                                                                                    
+	{	
 	}
-
+  
       else {
 	rel = *(unsigned short int *)(report + 8);
 	/*                                                                                                                     
@@ -113,23 +110,16 @@ void I_PollAccelerometer(void)
 	    /* receives signed acceleration in milli-G */
 	    int val_mg = *(int *)(report + 12);
 	    accel.val[axis_ind] = val_mg;
-	    //fprintf(stderr,"Poll %d \n",val_mg); 
-	    /* convert acceleration to G */
-	    //float val_g = (float)val_mg / 1000.0;
-
-	    /* save to accel on the axis */
-
 	  }
-
-      }
-    }
-
-  ev.type = ev_accelerometer;
-  ev.data1 = accel.val[0];
-  ev.data2 = accel.val[1];
-  ev.data3 = accel.val[2];
-  //if (accel.val[1] > 0) D_PostEvent(&ev);
-D_PostEvent(&ev);
+      } 
+    }  
+      ev.type = ev_accelerometer;
+      ev.data1 = accel.val[0];
+      ev.data2 = accel.val[1];
+      ev.data3 = accel.val[2];
+      
+      D_PostEvent(&ev);
+    
 }
 
 static void I_EndJoystick(void)
