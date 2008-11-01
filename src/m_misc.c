@@ -315,9 +315,9 @@ default_t defaults[] =
   {"videomode",{(int*)&default_videomode},{VID_MODE8}, VID_MODE8, VID_MODE8, def_int,ss_none},
 #endif
   /* 640x480 default resolution */
-  {"screen_width",{&desired_screenwidth},{640}, 320, MAX_SCREENWIDTH,
+  {"screen_width",{&desired_screenwidth},{320}, 320, MAX_SCREENWIDTH,
    def_int,ss_none},
-  {"screen_height",{&desired_screenheight},{480},200,MAX_SCREENHEIGHT,
+  {"screen_height",{&desired_screenheight},{240},200,MAX_SCREENHEIGHT,
    def_int,ss_none},
   {"use_fullscreen",{&use_fullscreen},{1},0,1, /* proff 21/05/2000 */
    def_bool,ss_none},
@@ -543,7 +543,7 @@ default_t defaults[] =
   {"Accelerometer Settings",{NULL},{0},UL,UL,def_none,ss_none},
   {"accelerometer_xwindow", {&accelerometer_xwindow},{40},0,100,def_int,ss_none},  // Deadzone (in pixels) defines the length away 
   {"accelerometer_ywindow", {&accelerometer_ywindow},{50},0,100,def_int,ss_none},  // from "home" position required for response 
-  {"accelerometer_zwindow", {&accelerometer_ywindow},{55},0,100,def_int,ss_none},  // from "home" position required for response 
+  {"accelerometer_zwindow", {&accelerometer_zwindow},{55},0,100,def_int,ss_none},  // from "home" position required for response 
   {"accelerometer_xscale", {&accelerometer_xscale},{0},0,200,def_int,ss_none},   // This are the scaling factors for tilting acceleration 
   {"accelerometer_yscale", {&accelerometer_yscale},{90},0,200,def_int,ss_none}, //  How fast should we increase speed as we move away from "Home"
   {"accelerometer_zscale", {&accelerometer_zscale},{4},0,200,def_int,ss_none},  
