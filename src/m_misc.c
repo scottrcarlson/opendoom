@@ -1,6 +1,6 @@
 /* Emacs style mode select   -*- C++ -*-
  *-----------------------------------------------------------------------------
- *
+ * 
  *
  *  PrBoom: a Doom port merged with LxDoom and LSDLDoom
  *  based on BOOM, a modified and improved DOOM engine
@@ -956,13 +956,7 @@ void M_LoadDefaults (void)
 #else
     sprintf ((char *)defaultfile,
 #endif
-            "%s%s%sboom.cfg", exedir, HasTrailingSlash(exedir) ? "" : "/", 
-#if ((defined GL_DOOM) && (defined _MSC_VER))
-            "gl"
-#else
-            "pr"
-#endif
-            );
+            "%s%sopendoom.cfg", exedir, HasTrailingSlash(exedir) ? "" : "/");
   }
 
   lprintf (LO_CONFIRM, " default file: %s\n",defaultfile);
