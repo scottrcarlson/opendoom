@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 #
-# automake Makefile.am for the PrBoom source directory
+# automake Makefile.am for the Opendoom source directory
 #
 #
 # Process this file with automake to produce Makefile.in
@@ -41,8 +41,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-EXTRA_PROGRAMS = prboom$(EXEEXT)
-games_PROGRAMS = @BUILD_DOOM@ prboom-game-server$(EXEEXT)
+EXTRA_PROGRAMS = opendoom$(EXEEXT)
+games_PROGRAMS = @BUILD_DOOM@ opendoom-game-server$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -55,7 +55,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(gamesdir)"
 gamesPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(games_PROGRAMS)
-am__prboom_SOURCES_DIST = mmus2mid.c mmus2mid.h am_map.c g_game.c \
+am__opendoom_SOURCES_DIST = mmus2mid.c mmus2mid.h am_map.c g_game.c \
 	p_maputl.h r_plane.h am_map.h g_game.h p_mobj.c r_demo.c \
 	r_segs.c hu_lib.c lprintf.c p_mobj.h r_demo.h r_segs.h \
 	hu_lib.h lprintf.h p_plats.c r_sky.c d_deh.c hu_stuff.c \
@@ -107,13 +107,14 @@ am__objects_2 = d_client.$(OBJEXT)
 @BUILD_GL_TRUE@am__objects_3 = gl_main.$(OBJEXT) gl_texture.$(OBJEXT)
 @WAD_MMAP_FALSE@am__objects_4 = w_memcache.$(OBJEXT)
 @WAD_MMAP_TRUE@am__objects_4 = w_mmap.$(OBJEXT)
-am_prboom_OBJECTS = mmus2mid.$(OBJEXT) $(am__objects_1) \
+am_opendoom_OBJECTS = mmus2mid.$(OBJEXT) $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3) $(am__objects_4)
-prboom_OBJECTS = $(am_prboom_OBJECTS)
-prboom_DEPENDENCIES = SDL/libsdldoom.a
-am_prboom_game_server_OBJECTS = d_server.$(OBJEXT)
-prboom_game_server_OBJECTS = $(am_prboom_game_server_OBJECTS)
-prboom_game_server_DEPENDENCIES = POSIX/libposixdoom.a SDL/i_network.o
+opendoom_OBJECTS = $(am_opendoom_OBJECTS)
+opendoom_DEPENDENCIES = SDL/libsdldoom.a
+am_opendoom_game_server_OBJECTS = d_server.$(OBJEXT)
+opendoom_game_server_OBJECTS = $(am_opendoom_game_server_OBJECTS)
+opendoom_game_server_DEPENDENCIES = POSIX/libposixdoom.a \
+	SDL/i_network.o
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/autotools/depcomp
 am__depfiles_maybe = depfiles
@@ -121,9 +122,9 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(prboom_SOURCES) $(prboom_game_server_SOURCES)
-DIST_SOURCES = $(am__prboom_SOURCES_DIST) \
-	$(prboom_game_server_SOURCES)
+SOURCES = $(opendoom_SOURCES) $(opendoom_game_server_SOURCES)
+DIST_SOURCES = $(am__opendoom_SOURCES_DIST) \
+	$(opendoom_game_server_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -250,8 +251,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = SDL POSIX MAC
 gamesdir = $(prefix)/games
-prboom_game_server_SOURCES = d_server.c protocol.h
-prboom_game_server_LDADD = POSIX/libposixdoom.a SDL/i_network.o @NET_LIBS@ @SDL_LIBS@
+opendoom_game_server_SOURCES = d_server.c protocol.h
+opendoom_game_server_LDADD = POSIX/libposixdoom.a SDL/i_network.o @NET_LIBS@ @SDL_LIBS@
 COMMON_SRC = \
  am_map.c       g_game.c           p_maputl.h       r_plane.h   \
  am_map.h       g_game.h           p_mobj.c         r_demo.c    r_segs.c    \
@@ -293,8 +294,8 @@ NET_CLIENT_SRC = d_client.c
 @BUILD_GL_TRUE@USE_GL_SRC = gl_intern.h  gl_main.c  gl_struct.h  gl_texture.c
 @WAD_MMAP_FALSE@WAD_SRC = w_memcache.c
 @WAD_MMAP_TRUE@WAD_SRC = w_mmap.c
-prboom_SOURCES = mmus2mid.c mmus2mid.h $(COMMON_SRC) $(NET_CLIENT_SRC) $(USE_GL_SRC) $(WAD_SRC)
-prboom_LDADD = SDL/libsdldoom.a @MIXER_LIBS@ @NET_LIBS@ @SDL_LIBS@ @GL_LIBS@ @MATH_LIB@
+opendoom_SOURCES = mmus2mid.c mmus2mid.h $(COMMON_SRC) $(NET_CLIENT_SRC) $(USE_GL_SRC) $(WAD_SRC)
+opendoom_LDADD = SDL/libsdldoom.a @MIXER_LIBS@ @NET_LIBS@ @SDL_LIBS@ @GL_LIBS@ @MATH_LIB@
 all: all-recursive
 
 .SUFFIXES:
@@ -351,12 +352,12 @@ uninstall-gamesPROGRAMS:
 
 clean-gamesPROGRAMS:
 	-test -z "$(games_PROGRAMS)" || rm -f $(games_PROGRAMS)
-prboom$(EXEEXT): $(prboom_OBJECTS) $(prboom_DEPENDENCIES) 
-	@rm -f prboom$(EXEEXT)
-	$(LINK) $(prboom_OBJECTS) $(prboom_LDADD) $(LIBS)
-prboom-game-server$(EXEEXT): $(prboom_game_server_OBJECTS) $(prboom_game_server_DEPENDENCIES) 
-	@rm -f prboom-game-server$(EXEEXT)
-	$(LINK) $(prboom_game_server_OBJECTS) $(prboom_game_server_LDADD) $(LIBS)
+opendoom$(EXEEXT): $(opendoom_OBJECTS) $(opendoom_DEPENDENCIES) 
+	@rm -f opendoom$(EXEEXT)
+	$(LINK) $(opendoom_OBJECTS) $(opendoom_LDADD) $(LIBS)
+opendoom-game-server$(EXEEXT): $(opendoom_game_server_OBJECTS) $(opendoom_game_server_DEPENDENCIES) 
+	@rm -f opendoom-game-server$(EXEEXT)
+	$(LINK) $(opendoom_game_server_OBJECTS) $(opendoom_game_server_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

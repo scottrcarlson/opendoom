@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([prboom],[2.4.7])
+AC_INIT([opendoom],[0.1])
 AC_CONFIG_AUX_DIR(autotools)
 
 dnl --- Fire up automake
@@ -23,7 +23,7 @@ else
     AC_MSG_RESULT(no)
 fi
 
-AC_ARG_WITH(waddir,AC_HELP_STRING([--with-waddir],[Path to install prboom.wad and look for other WAD files]),
+AC_ARG_WITH(waddir,AC_HELP_STRING([--with-waddir],[Path to install opendoom.wad and look for other WAD files]),
 DOOMWADDIR="$withval",
 if test "x$prefix" != xNONE; then
   DOOMWADDIR="$prefix/share/games/doom"
@@ -151,8 +151,8 @@ LIBS="$savelibs"
 AC_CHECK_LIB(SDL_mixer,Mix_LoadMUS,[
     AC_DEFINE(HAVE_LIBSDL_MIXER,1,[Define if you have the SDL mixer library -lSDL_mixer])
     MIXER_LIBS="$MIXER_LIBS -lSDL_mixer"
-    BUILD_DOOM="prboom"
-],echo "*** Cannot compile PrBoom without SDL_mixer installed"
+    BUILD_DOOM="opendoom"
+],echo "*** Cannot compile OpenDOOM without SDL_mixer installed"
 echo "But I can compile the game server"
 BUILD_DOOM=""
 ,$SDL_LIBS $MIXER_LIBS)
@@ -176,8 +176,8 @@ AC_CHECK_LIB(SDL_net,SDLNet_UDP_Bind,[
 
 if test "$sdl_main" != "yes" || test "$sdl_net" != yes
 then
- AC_MSG_ERROR([*** You must have the SDL libraries installed before you can compile prboom
- *** See http://prboom.sourceforge.net/linux.html
+ AC_MSG_ERROR([*** You must have the SDL libraries installed before you can compile OpenDOOM
+ *** See http://unsyncopated.com/BrainSolvent/Doom Port
  ])
 fi
 
@@ -217,4 +217,4 @@ dnl -- ac_aux_dir - see Makefile.am
 AC_SUBST(ac_aux_dir)
 
 dnl --- output
-AC_OUTPUT(Makefile src/Makefile src/POSIX/Makefile src/SDL/Makefile src/MAC/Makefile doc/Makefile data/Makefile ICONS/Makefile VisualC6/Makefile VisualC8/Makefile prboom.spec)
+AC_OUTPUT(Makefile src/Makefile src/POSIX/Makefile src/SDL/Makefile src/MAC/Makefile doc/Makefile data/Makefile ICONS/Makefile VisualC6/Makefile VisualC8/Makefile opendoom.spec)

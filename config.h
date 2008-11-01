@@ -104,22 +104,22 @@
 /* #undef I386_ASM */
 
 /* Name of package */
-#define PACKAGE "prboom"
+#define PACKAGE "opendoom"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "prboom"
+#define PACKAGE_NAME "opendoom"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "prboom 2.4.7"
+#define PACKAGE_STRING "opendoom 0.1"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "prboom"
+#define PACKAGE_TARNAME "opendoom"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.4.7"
+#define PACKAGE_VERSION "0.1"
 
 /* Set to the attribute to apply to struct definitions to make them packed */
 #define PACKEDATTR __attribute__((packed))
@@ -145,7 +145,7 @@
 #define USE_SDL_NET 1
 
 /* Version number of package */
-#define VERSION "2.4.7"
+#define VERSION "0.1"
 
 /* Define if using the dmalloc debugging malloc package */
 /* #undef WITH_DMALLOC */
