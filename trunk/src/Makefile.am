@@ -1,5 +1,5 @@
 #
-# automake Makefile.am for the PrBoom source directory
+# automake Makefile.am for the Opendoom source directory
 #
 #
 # Process this file with automake to produce Makefile.in
@@ -9,13 +9,13 @@
 SUBDIRS = SDL POSIX MAC
 
 gamesdir=$(prefix)/games
-EXTRA_PROGRAMS = prboom
-games_PROGRAMS = @BUILD_DOOM@ prboom-game-server
+EXTRA_PROGRAMS = opendoom
+games_PROGRAMS = @BUILD_DOOM@ opendoom-game-server
 
 CFLAGS = @CFLAGS@ @SDL_CFLAGS@
 
-prboom_game_server_SOURCES = d_server.c protocol.h
-prboom_game_server_LDADD = POSIX/libposixdoom.a SDL/i_network.o @NET_LIBS@ @SDL_LIBS@
+opendoom_game_server_SOURCES = d_server.c protocol.h
+opendoom_game_server_LDADD = POSIX/libposixdoom.a SDL/i_network.o @NET_LIBS@ @SDL_LIBS@
 
 COMMON_SRC = \
  am_map.c       g_game.c           p_maputl.h       r_plane.h   \
@@ -67,6 +67,6 @@ else
 WAD_SRC = w_memcache.c
 endif
 
-prboom_SOURCES = mmus2mid.c mmus2mid.h $(COMMON_SRC) $(NET_CLIENT_SRC) $(USE_GL_SRC) $(WAD_SRC)
-prboom_LDADD = SDL/libsdldoom.a @MIXER_LIBS@ @NET_LIBS@ @SDL_LIBS@ @GL_LIBS@ @MATH_LIB@
+opendoom_SOURCES = mmus2mid.c mmus2mid.h $(COMMON_SRC) $(NET_CLIENT_SRC) $(USE_GL_SRC) $(WAD_SRC)
+opendoom_LDADD = SDL/libsdldoom.a @MIXER_LIBS@ @NET_LIBS@ @SDL_LIBS@ @GL_LIBS@ @MATH_LIB@
 

@@ -20,9 +20,9 @@
 #
 
 
-pkgdatadir = $(datadir)/prboom
-pkglibdir = $(libdir)/prboom
-pkgincludedir = $(includedir)/prboom
+pkgdatadir = $(datadir)/opendoom
+pkglibdir = $(libdir)/opendoom
+pkgincludedir = $(includedir)/opendoom
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -41,7 +41,7 @@ target_triplet = arm-angstrom-linux-gnueabi
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/prboom.spec.in $(top_srcdir)/configure AUTHORS \
+	$(srcdir)/opendoom.spec.in $(top_srcdir)/configure AUTHORS \
 	COPYING INSTALL NEWS TODO autotools/config.guess \
 	autotools/config.sub autotools/depcomp autotools/install-sh \
 	autotools/missing
@@ -53,7 +53,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = prboom.spec
+CONFIG_CLEAN_FILES = opendoom.spec
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -94,7 +94,7 @@ AUTOCONF = ${SHELL} /home/scott/code/opendoom/autotools/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/scott/code/opendoom/autotools/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/scott/code/opendoom/autotools/missing --run automake-1.10
 AWK = gawk
-BUILD_DOOM = prboom
+BUILD_DOOM = opendoom
 CC = ccache arm-angstrom-linux-gnueabi-gcc -march=armv4t -mtune=arm920t
 CCDEPMODE = depmode=gcc3
 CFLAGS = -isystem/usr/local/openmoko/arm/arm-angstrom-linux-gnueabi/include -fexpensive-optimizations -fomit-frame-pointer -frename-registers -Os -I$(top_srcdir)/src
@@ -130,12 +130,12 @@ MKDIR_P = /bin/mkdir -p
 NET_CFLAGS = 
 NET_LIBS = -lSDL_net
 OBJEXT = o
-PACKAGE = prboom
+PACKAGE = opendoom
 PACKAGE_BUGREPORT = 
-PACKAGE_NAME = prboom
-PACKAGE_STRING = prboom 2.4.7
-PACKAGE_TARNAME = prboom
-PACKAGE_VERSION = 2.4.7
+PACKAGE_NAME = opendoom
+PACKAGE_STRING = opendoom 0.1
+PACKAGE_TARNAME = opendoom
+PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
 RANLIB = arm-angstrom-linux-gnueabi-ranlib
 SDL_CFLAGS = -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
@@ -144,7 +144,7 @@ SDL_LIBS = -L/usr/lib -lSDL
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = arm-angstrom-linux-gnueabi-strip
-VERSION = 2.4.7
+VERSION = 0.1
 abs_builddir = /home/scott/code/opendoom
 abs_srcdir = /home/scott/code/opendoom
 abs_top_builddir = /home/scott/code/opendoom
@@ -165,7 +165,7 @@ build_vendor = pc
 builddir = .
 datadir = /usr/share
 datarootdir = ${prefix}/share
-docdir = $(prefix)/share/doc/prboom-2.4.7
+docdir = $(prefix)/share/doc/opendoom-0.1
 dvidir = ${docdir}
 exec_prefix = /usr
 host = arm-angstrom-linux-gnueabi
@@ -211,7 +211,7 @@ AUX_DIST_GEN = \
 
 MAINTAINERCLEANFILES = $(AUX_DIST_GEN)
 SUBDIRS = doc data src ICONS VisualC8 VisualC6
-EXTRA_DIST = prboom.spec.in prboom.spec config.h bootstrap $(AUX_DIST_GEN)
+EXTRA_DIST = opendoom.spec.in opendoom.spec config.h bootstrap $(AUX_DIST_GEN)
 doc_DATA = README COPYING AUTHORS NEWS
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -267,7 +267,7 @@ $(srcdir)/config.h.in: # $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-prboom.spec: $(top_builddir)/config.status $(srcdir)/prboom.spec.in
+opendoom.spec: $(top_builddir)/config.status $(srcdir)/opendoom.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-docDATA: $(doc_DATA)
 	@$(NORMAL_INSTALL)
