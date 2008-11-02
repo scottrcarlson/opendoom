@@ -1,0 +1,10 @@
+ [Desktop Entry]
+Encoding=UTF-8
+Name=Doom
+Comment=Doom Port for OpenMoko
+Exec=dm
+Icon=doompinkdemon
+Type=Application
+Categories=GTK;Application;Utilities;
+SingleInstance=true
+StartupNotify=true

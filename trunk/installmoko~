@@ -1,0 +1,5 @@
+ssh root@192.168.0.202 "mkdir /usr/local | mkdir /usr/local/lib | mkdir /usr/local/games | mkdir /usr/local/share | mkdir /usr/local/share/games | mkdir /usr/local/share/games/doom | mkdir ~/.opendoom"
+scp -r ~/code/timidity_patches/timidity root@192.168.0.202:/usr/local/lib
+scp ~/code/gamedata/*.wad root@192.168.0.202:/usr/local/share/games/doom
+scp ~/code/opendoom/opendoom.cfg root@192.168.0.202:~/.opendoom/
+./pushmoko

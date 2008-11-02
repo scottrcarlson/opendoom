@@ -1,0 +1,8 @@
+cp dm proto/usr/bin
+cp src/opendoom proto/usr/games
+cp data/prboom.wad proto/usr/local/share/games/doom
+cp icons/doompinkdemon.png proto/usr/share/pixmaps
+cp doom.desktop proto/usr/share/applications
+cp opendoom.cfg proto/home/root/.opendoom/
+cp -r data/timidity proto/usr/local/lib/
+ipkg-build -g root -o root proto
