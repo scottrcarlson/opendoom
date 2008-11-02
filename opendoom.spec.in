@@ -1,18 +1,18 @@
-%define doomname prboom
+%define doomname @PACKAGE@
 
 Name: %{doomname}
 Summary: Doom - classic 3D shoot-em-up game
-Version: 2.4.7
+Version: @VERSION@
 Release: 1
-Source: ftp://prdownloads.sourceforge.net/prboom/prboom-2.4.7.tar.gz
-URL: http://prboom.sourceforge.net/
-Group: Amusements/Games
+Source: http://code.google.com/p/opendoom/
+URL: http://unsyncopated.com/BrainSolvent/Doom%20Port
+Group: Mobile/Games
 BuildRoot: /var/tmp/%{doomname}-buildroot
 License: GPL
-Packager: Colin Phipps <cph@moria.org.uk>
+Packager: Scott Carlson <scottrcarlson@gmail.com>
 Prefix: %{_prefix}
 Autoreq: 0
-Requires: libSDL-1.2.so.0, libSDL_mixer-1.2.so.0, libSDL_net-1.2.so.0, libm.so.6, libc.so.6, libts-1.0.so.0
+Requires: libSDL-1.2.so.0, libSDL_mixer-1.2.so.0, libSDL_net-1.2.so.0, libm.so.6, libc.so.6
 
 %description
 Doom is the classic 3D shoot-em-up game. It must have been one of the best
@@ -44,4 +44,3 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}
 /usr/games
 %{_datadir}/games/doom/prboom.wad
-
